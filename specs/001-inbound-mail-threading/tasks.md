@@ -23,12 +23,12 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Initialize NestJS backend project in `backend/` with TypeScript
-- [ ] T002 Initialize React + Vite frontend project in `frontend/` with TypeScript
-- [ ] T003 [P] Configure ESLint and Prettier for `backend/`
-- [ ] T004 [P] Configure ESLint and Prettier for `frontend/`
-- [ ] T005 [P] Create `backend/.env.example` with IMAP, database, and app config variables
-- [ ] T006 [P] Create `frontend/.env.example` with API and WebSocket URLs
+- [x] T001 Initialize NestJS backend project in `backend/` with TypeScript
+- [x] T002 Initialize React + Vite frontend project in `frontend/` with TypeScript
+- [x] T003 [P] Configure ESLint and Prettier for `backend/`
+- [x] T004 [P] Configure ESLint and Prettier for `frontend/`
+- [x] T005 [P] Create `backend/.env.example` with IMAP, database, and app config variables
+- [x] T006 [P] Create `frontend/.env.example` with API and WebSocket URLs
 
 ---
 
@@ -38,15 +38,15 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 Install Prisma and configure PostgreSQL connection in `backend/prisma/schema.prisma`
-- [ ] T008 Define Thread, Email, and Attachment models in `backend/prisma/schema.prisma` per data-model.md
-- [ ] T009 Run initial Prisma migration to create database tables
-- [ ] T010 [P] Create PrismaModule in `backend/src/prisma/prisma.module.ts`
-- [ ] T011 [P] Create PrismaService with lifecycle hooks in `backend/src/prisma/prisma.service.ts`
-- [ ] T012 Register PrismaModule as global module in `backend/src/app.module.ts`
-- [ ] T013 [P] Configure `@nestjs/config` with environment validation in `backend/src/app.module.ts`
-- [ ] T014 [P] Enable CORS in `backend/src/main.ts` for frontend dev server origin
-- [ ] T015 Set global API prefix `/api` in `backend/src/main.ts`
+- [x] T007 Install Prisma and configure PostgreSQL connection in `backend/prisma/schema.prisma`
+- [x] T008 Define Thread, Email, and Attachment models in `backend/prisma/schema.prisma` per data-model.md
+- [x] T009 Run initial Prisma migration to create database tables ⚠️ *Requires user to configure DATABASE_URL in backend/.env first*
+- [x] T010 [P] Create PrismaModule in `backend/src/prisma/prisma.module.ts`
+- [x] T011 [P] Create PrismaService with lifecycle hooks in `backend/src/prisma/prisma.service.ts`
+- [x] T012 Register PrismaModule as global module in `backend/src/app.module.ts`
+- [x] T013 [P] Configure `@nestjs/config` with environment validation in `backend/src/app.module.ts`
+- [x] T014 [P] Enable CORS in `backend/src/main.ts` for frontend dev server origin
+- [x] T015 Set global API prefix `/api` in `backend/src/main.ts`
 
 **Checkpoint**: Foundation ready — database connected, Prisma client available, NestJS configured
 
@@ -60,28 +60,28 @@
 
 ### Backend — IMAP Worker (US1)
 
-- [ ] T016 [US1] Create ImapModule in `backend/src/imap/imap.module.ts`
-- [ ] T017 [US1] Implement ImapService with IMAP connection, IDLE/poll logic, and lifecycle hooks (OnModuleInit/OnModuleDestroy) in `backend/src/imap/imap.service.ts`
-- [ ] T018 [US1] Implement MailParserService with tag extraction (`extractTag` from `To` header) and email parsing via `mailparser` in `backend/src/imap/mail-parser.service.ts`
-- [ ] T019 [US1] Wire ImapService to call MailParserService on new email → create/find Thread → insert Email record
+- [x] T016 [US1] Create ImapModule in `backend/src/imap/imap.module.ts`
+- [x] T017 [US1] Implement ImapService with IMAP connection, IDLE/poll logic, and lifecycle hooks (OnModuleInit/OnModuleDestroy) in `backend/src/imap/imap.service.ts`
+- [x] T018 [US1] Implement MailParserService with tag extraction (`extractTag` from `To` header) and email parsing via `mailparser` in `backend/src/imap/mail-parser.service.ts`
+- [x] T019 [US1] Wire ImapService to call MailParserService on new email → create/find Thread → insert Email record
 
 ### Backend — Thread & Email API (US1)
 
-- [ ] T020 [P] [US1] Create ThreadsModule in `backend/src/threads/threads.module.ts`
-- [ ] T021 [P] [US1] Implement ThreadsService with `findAll()` (ordered by updatedAt DESC) and `findByTag()` in `backend/src/threads/threads.service.ts`
-- [ ] T022 [US1] Implement ThreadsController with `GET /threads` and `GET /threads/:tag` in `backend/src/threads/threads.controller.ts`
-- [ ] T023 [P] [US1] Create EmailsModule in `backend/src/emails/emails.module.ts`
-- [ ] T024 [P] [US1] Implement EmailsService with `findByThreadId()` (ordered by receivedAt DESC) in `backend/src/emails/emails.service.ts`
-- [ ] T025 [US1] Implement deduplication logic using `messageId` unique constraint (upsert pattern) in `backend/src/emails/emails.service.ts`
+- [x] T020 [P] [US1] Create ThreadsModule in `backend/src/threads/threads.module.ts`
+- [x] T021 [P] [US1] Implement ThreadsService with `findAll()` (ordered by updatedAt DESC) and `findByTag()` in `backend/src/threads/threads.service.ts`
+- [x] T022 [US1] Implement ThreadsController with `GET /threads` and `GET /threads/:tag` in `backend/src/threads/threads.controller.ts`
+- [x] T023 [P] [US1] Create EmailsModule in `backend/src/emails/emails.module.ts`
+- [x] T024 [P] [US1] Implement EmailsService with `findByThreadId()` (ordered by receivedAt DESC) in `backend/src/emails/emails.service.ts`
+- [x] T025 [US1] Implement deduplication logic using `messageId` unique constraint (upsert pattern) in `backend/src/emails/emails.service.ts`
 
 ### Frontend — Thread List & Thread View (US1)
 
-- [ ] T026 [US1] Define TypeScript interfaces for Thread, Email, and API responses in `frontend/src/types/index.ts`
-- [ ] T027 [US1] Create API client service with `getThreads()` and `getThreadByTag()` in `frontend/src/services/api.ts`
-- [ ] T028 [US1] Implement ThreadList component displaying threads with full address labels in `frontend/src/components/ThreadList.tsx`
-- [ ] T029 [US1] Implement ThreadView component displaying emails within a thread (newest first) in `frontend/src/components/ThreadView.tsx`
-- [ ] T030 [US1] Wire App component with thread list ↔ thread view navigation in `frontend/src/App.tsx`
-- [ ] T031 [US1] Style the UI with modern design (dark theme, thread sidebar, responsive layout) in `frontend/src/index.css`
+- [x] T026 [US1] Define TypeScript interfaces for Thread, Email, and API responses in `frontend/src/types/index.ts`
+- [x] T027 [US1] Create API client service with `getThreads()` and `getThreadByTag()` in `frontend/src/services/api.ts`
+- [x] T028 [US1] Implement ThreadList component displaying threads with full address labels in `frontend/src/components/ThreadList.tsx`
+- [x] T029 [US1] Implement ThreadView component displaying emails within a thread (newest first) in `frontend/src/components/ThreadView.tsx`
+- [x] T030 [US1] Wire App component with thread list ↔ thread view navigation in `frontend/src/App.tsx`
+- [x] T031 [US1] Style the UI with modern design (dark theme, thread sidebar, responsive layout) in `frontend/src/index.css`
 
 **Checkpoint**: User Story 1 complete — emails arrive via IMAP, grouped by tag, displayed in UI as distinct threads
 
@@ -95,15 +95,15 @@
 
 ### Backend — Email Detail API (US2)
 
-- [ ] T032 [US2] Implement `findById()` method returning full email with raw headers in `backend/src/emails/emails.service.ts`
-- [ ] T033 [US2] Implement EmailsController with `GET /emails/:id` in `backend/src/emails/emails.controller.ts`
+- [x] T032 [US2] Implement `findById()` method returning full email with raw headers in `backend/src/emails/emails.service.ts`
+- [x] T033 [US2] Implement EmailsController with `GET /emails/:id` in `backend/src/emails/emails.controller.ts`
 
 ### Frontend — Email Detail View (US2)
 
-- [ ] T034 [US2] Add `getEmailById()` to API client in `frontend/src/services/api.ts`
-- [ ] T035 [US2] Implement EmailBodyViewer component with plain text / HTML toggle (sandboxed iframe) in `frontend/src/components/EmailBodyViewer.tsx`
-- [ ] T036 [US2] Implement EmailDetail component showing full email metadata + EmailBodyViewer in `frontend/src/components/EmailDetail.tsx`
-- [ ] T037 [US2] Integrate EmailDetail into App layout (click email in ThreadView → show detail) in `frontend/src/App.tsx`
+- [x] T034 [US2] Add `getEmailById()` to API client in `frontend/src/services/api.ts`
+- [x] T035 [US2] Implement EmailBodyViewer component with plain text / HTML toggle (sandboxed iframe) in `frontend/src/components/EmailBodyViewer.tsx`
+- [x] T036 [US2] Implement EmailDetail component showing full email metadata + EmailBodyViewer in `frontend/src/components/EmailDetail.tsx`
+- [x] T037 [US2] Integrate EmailDetail into App layout (click email in ThreadView → show detail) in `frontend/src/App.tsx`
 
 **Checkpoint**: User Story 2 complete — full email details viewable with dual-mode body rendering
 
@@ -117,17 +117,17 @@
 
 ### Backend — WebSocket Gateway (US3)
 
-- [ ] T038 [US3] Install `@nestjs/websockets` and `@nestjs/platform-socket.io` dependencies
-- [ ] T039 [US3] Create EventsModule in `backend/src/events/events.module.ts`
-- [ ] T040 [US3] Implement EventsGateway with `email:new`, `thread:new` events in `backend/src/events/events.gateway.ts`
-- [ ] T041 [US3] Emit WebSocket events from ImapService when new email is processed in `backend/src/imap/imap.service.ts`
+- [x] T038 [US3] Install `@nestjs/websockets` and `@nestjs/platform-socket.io` dependencies
+- [x] T039 [US3] Create EventsModule in `backend/src/events/events.module.ts`
+- [x] T040 [US3] Implement EventsGateway with `email:new`, `thread:new` events in `backend/src/events/events.gateway.ts`
+- [x] T041 [US3] Emit WebSocket events from ImapService when new email is processed in `backend/src/imap/imap.service.ts`
 
 ### Frontend — Real-time Updates (US3)
 
-- [ ] T042 [US3] Install `socket.io-client` dependency in `frontend/`
-- [ ] T043 [US3] Create Socket.IO client service with event listeners in `frontend/src/services/socket.ts`
-- [ ] T044 [US3] Integrate socket events into ThreadList (auto-add new threads, update counts) in `frontend/src/components/ThreadList.tsx`
-- [ ] T045 [US3] Integrate socket events into ThreadView (auto-append new emails) in `frontend/src/components/ThreadView.tsx`
+- [x] T042 [US3] Install `socket.io-client` dependency in `frontend/`
+- [x] T043 [US3] Create Socket.IO client service with event listeners in `frontend/src/services/socket.ts`
+- [x] T044 [US3] Integrate socket events into ThreadList (auto-add new threads, update counts) in `frontend/src/components/ThreadList.tsx`
+- [x] T045 [US3] Integrate socket events into ThreadView (auto-append new emails) in `frontend/src/components/ThreadView.tsx`
 
 **Checkpoint**: User Story 3 complete — new emails appear in real-time without page refresh
 
@@ -141,15 +141,15 @@
 
 ### Backend — Attachment Storage & API (US4)
 
-- [ ] T046 [US4] Create AttachmentsModule in `backend/src/attachments/attachments.module.ts`
-- [ ] T047 [US4] Implement AttachmentsService with `saveAttachment()` (write to filesystem) and `findByEmailId()` in `backend/src/attachments/attachments.service.ts`
-- [ ] T048 [US4] Implement AttachmentsController with `GET /attachments/:id/download` (stream file with correct Content-Type and Content-Disposition) in `backend/src/attachments/attachments.controller.ts`
-- [ ] T049 [US4] Integrate attachment extraction into MailParserService (parse MIME parts → save files → create records) in `backend/src/imap/mail-parser.service.ts`
+- [x] T046 [US4] Create AttachmentsModule in `backend/src/attachments/attachments.module.ts`
+- [x] T047 [US4] Implement AttachmentsService with `saveAttachment()` (write to filesystem) and `findByEmailId()` in `backend/src/attachments/attachments.service.ts`
+- [x] T048 [US4] Implement AttachmentsController with `GET /attachments/:id/download` (stream file with correct Content-Type and Content-Disposition) in `backend/src/attachments/attachments.controller.ts`
+- [x] T049 [US4] Integrate attachment extraction into MailParserService (parse MIME parts → save files → create records) in `backend/src/imap/mail-parser.service.ts`
 
 ### Frontend — Attachment Display (US4)
 
-- [ ] T050 [US4] Implement AttachmentList component with filename, size, and download link in `frontend/src/components/AttachmentList.tsx`
-- [ ] T051 [US4] Integrate AttachmentList into EmailDetail component in `frontend/src/components/EmailDetail.tsx`
+- [x] T050 [US4] Implement AttachmentList component with filename, size, and download link in `frontend/src/components/AttachmentList.tsx`
+- [x] T051 [US4] Integrate AttachmentList into EmailDetail component in `frontend/src/components/EmailDetail.tsx`
 
 **Checkpoint**: User Story 4 complete — attachments stored, displayed, and downloadable
 
@@ -161,16 +161,16 @@
 
 ### Backend — Delete API
 
-- [ ] T052 Implement `deleteByTag()` (cascade delete thread + emails + attachments + files) in `backend/src/threads/threads.service.ts`
-- [ ] T053 Implement `deleteAll()` (bulk clear all data + attachment files) in `backend/src/threads/threads.service.ts`
-- [ ] T054 Add `DELETE /threads/:tag` and `DELETE /threads` endpoints in `backend/src/threads/threads.controller.ts`
-- [ ] T055 Emit `thread:deleted` and `all:cleared` WebSocket events on deletion in `backend/src/events/events.gateway.ts`
+- [x] T052 Implement `deleteByTag()` (cascade delete thread + emails + attachments + files) in `backend/src/threads/threads.service.ts`
+- [x] T053 Implement `deleteAll()` (bulk clear all data + attachment files) in `backend/src/threads/threads.service.ts`
+- [x] T054 Add `DELETE /threads/:tag` and `DELETE /threads` endpoints in `backend/src/threads/threads.controller.ts`
+- [x] T055 Emit `thread:deleted` and `all:cleared` WebSocket events on deletion in `backend/src/events/events.gateway.ts`
 
 ### Frontend — Delete UI
 
-- [ ] T056 Add delete button per thread in ThreadList component in `frontend/src/components/ThreadList.tsx`
-- [ ] T057 Add "Clear All" button with confirmation dialog in `frontend/src/components/ThreadList.tsx`
-- [ ] T058 Handle `thread:deleted` and `all:cleared` socket events for real-time UI sync in `frontend/src/components/ThreadList.tsx`
+- [x] T056 Add delete button per thread in ThreadList component in `frontend/src/components/ThreadList.tsx`
+- [x] T057 Add "Clear All" button with confirmation dialog in `frontend/src/components/ThreadList.tsx`
+- [x] T058 Handle `thread:deleted` and `all:cleared` socket events for real-time UI sync in `frontend/src/components/ThreadList.tsx`
 
 **Checkpoint**: Data management complete — threads deletable individually or in bulk
 
@@ -180,12 +180,12 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T059 [P] Add error handling and user-friendly error states (loading, empty, error) across all frontend components
-- [ ] T060 [P] Add NestJS global exception filter for consistent API error responses in `backend/src/main.ts`
-- [ ] T061 [P] Add request logging middleware in `backend/src/main.ts`
-- [ ] T062 Add IMAP connection reconnection logic with exponential backoff in `backend/src/imap/imap.service.ts`
+- [x] T059 [P] Add error handling and user-friendly error states (loading, empty, error) across all frontend components
+- [x] T060 [P] Add NestJS global exception filter for consistent API error responses in `backend/src/main.ts`
+- [x] T061 [P] Add request logging middleware in `backend/src/main.ts`
+- [x] T062 Add IMAP connection reconnection logic with exponential backoff in `backend/src/imap/imap.service.ts`
 - [ ] T063 [P] Create README.md with setup instructions referencing quickstart.md
-- [ ] T064 Run full quickstart.md validation (end-to-end setup and test)
+- [ ] T064 Run full quickstart.md validation (end-to-end setup and test) ⚠️ *Requires database configured + IMAP credentials*
 
 ---
 
@@ -227,39 +227,25 @@
 
 ---
 
-## Parallel Example: User Story 1
-
-```bash
-# Backend modules can be created in parallel:
-Task T020: "Create ThreadsModule in backend/src/threads/threads.module.ts"
-Task T023: "Create EmailsModule in backend/src/emails/emails.module.ts"
-
-# Backend services can be created in parallel:
-Task T021: "Implement ThreadsService in backend/src/threads/threads.service.ts"
-Task T024: "Implement EmailsService in backend/src/emails/emails.service.ts"
-```
-
----
-
 ## Implementation Strategy
 
 ### MVP First (User Story 1 Only)
 
-1. Complete Phase 1: Setup (T001–T006)
-2. Complete Phase 2: Foundational (T007–T015)
-3. Complete Phase 3: User Story 1 (T016–T031)
+1. ✅ Complete Phase 1: Setup (T001–T006)
+2. ✅ Complete Phase 2: Foundational (T007–T015)
+3. ✅ Complete Phase 3: User Story 1 (T016–T031)
 4. **STOP and VALIDATE**: Send test emails, verify threads appear grouped by tag
 5. Deploy/demo if ready
 
 ### Incremental Delivery
 
-1. Setup + Foundational → Foundation ready
-2. Add User Story 1 → Test independently → Deploy/Demo (**MVP!**)
-3. Add User Story 2 → Email detail with HTML toggle → Deploy/Demo
-4. Add User Story 3 → Real-time updates → Deploy/Demo
-5. Add User Story 4 → Attachments → Deploy/Demo
-6. Add Data Management → Cleanup capability → Deploy/Demo
-7. Polish → Production-ready
+1. ✅ Setup + Foundational → Foundation ready
+2. ✅ Add User Story 1 → Test independently → Deploy/Demo (**MVP!**)
+3. ✅ Add User Story 2 → Email detail with HTML toggle → Deploy/Demo
+4. ✅ Add User Story 3 → Real-time updates → Deploy/Demo
+5. ✅ Add User Story 4 → Attachments → Deploy/Demo
+6. ✅ Add Data Management → Cleanup capability → Deploy/Demo
+7. **In progress**: Polish → Production-ready
 
 ---
 

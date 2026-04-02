@@ -93,8 +93,10 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
       try {
         await this.fetchUnseen();
         this.logger.log('👂 Listening via IMAP IDLE...');
-        for await (const update of this.client.idle()) {
-          if (update.type === 'exists') {
+        // imapflow idle() is a Promise<boolean>; re-call it to stay in IDLE
+        while (this.isRunning) {
+          const hasChanges = await this.client.idle();
+          if (hasChanges) {
             await this.fetchUnseen();
           }
         }
