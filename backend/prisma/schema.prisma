@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Thread {
+  id          String   @id @default(uuid())
+  tag         String   @unique
+  baseAddress String
+  fullAddress String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  emails Email[]
+}
+
+model Email {
+  id          String   @id @default(uuid())
+  messageId   String   @unique
+  fromEmail   String
+  toEmail     String
+  subject     String   @default("")
+  textBody    String?
+  htmlBody    String?
+  threadId    String
+  receivedAt  DateTime
+  rawHeaders  Json
+  createdAt   DateTime @default(now())
+
+  thread      Thread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  attachments Attachment[]
+
+  @@index([threadId, receivedAt(sort: Desc)])
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  filename    String
+  contentType String
+  size        Int
+  storagePath String
+  emailId     String
+  createdAt   DateTime @default(now())
+
+  email Email @relation(fields: [emailId], references: [id], onDelete: Cascade)
+}
