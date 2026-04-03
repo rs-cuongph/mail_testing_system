@@ -5,7 +5,7 @@
 
 ## Summary
 
-Build an inbound email testing system that connects to a cPanel IMAP server, receives emails addressed to `gens+{tag}@rn.work`, groups them into custom threads based on the `+tag` value, and displays them in a web UI. The system uses NestJS (backend API + IMAP worker), PostgreSQL with Prisma (data storage), React/Vite (frontend), and Socket.IO (real-time updates).
+Build an inbound email testing system that connects to a cPanel IMAP server, receives emails addressed to `gens+{tag}@runsystem.work`, groups them into custom threads based on the `+tag` value, and displays them in a web UI. The system uses NestJS (backend API + IMAP worker), PostgreSQL with Prisma (data storage), React/Vite (frontend), and Socket.IO (real-time updates).
 
 ## Technical Context
 

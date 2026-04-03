@@ -12,14 +12,14 @@
 - Q: Should the web UI require authentication or be an open internal tool? → A: No authentication — open internal tool, rely on network-level access control.
 - Q: How should the system display HTML email bodies? → A: Both views — users can toggle between plain text and sandboxed HTML rendering.
 - Q: How should old threads and emails be cleaned up? → A: Manual purge via UI — users can delete individual threads or bulk-clear all data.
-- Q: How should threads be labeled in the UI? → A: Full address format — display `gens+1@rn.work`, `gens+2@rn.work`.
+- Q: How should threads be labeled in the UI? → A: Full address format — display `gens+1@runsystem.work`, `gens+2@runsystem.work`.
 - Q: Should the system extract +tags from CC/BCC fields or only from To? → A: `To` field only — extract tags exclusively from the `To` header.
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View Email Threads by Tag (Priority: P1)
 
-A tester sends emails to `gens+1@rn.work` and `gens+2@rn.work`. The system receives these emails via IMAP, extracts the `+tag` from each recipient address, and groups them into separate threads. When the tester opens the UI, they see two distinct threads — one for tag `1` and one for tag `2` — each containing only the emails sent to that specific plus-addressed recipient.
+A tester sends emails to `gens+1@runsystem.work` and `gens+2@runsystem.work`. The system receives these emails via IMAP, extracts the `+tag` from each recipient address, and groups them into separate threads. When the tester opens the UI, they see two distinct threads — one for tag `1` and one for tag `2` — each containing only the emails sent to that specific plus-addressed recipient.
 
 **Why this priority**: This is the core value proposition of the system. Without tag-based threading, the system has no differentiating functionality. This story covers the end-to-end flow from email ingestion to thread display.
 
@@ -27,9 +27,9 @@ A tester sends emails to `gens+1@rn.work` and `gens+2@rn.work`. The system recei
 
 **Acceptance Scenarios**:
 
-1. **Given** email `gens+1@rn.work` receives Mail A and Mail B, **When** the user opens the UI, **Then** a thread labeled `gens+1@rn.work` displays both Mail A and Mail B in chronological order.
-2. **Given** email `gens+2@rn.work` receives Mail C, **When** the user opens the UI, **Then** a thread labeled `gens+2@rn.work` displays only Mail C, separate from the first thread.
-3. **Given** an email is sent to `gens@rn.work` (no tag), **When** the system processes it, **Then** the email appears under a thread labeled `gens@rn.work (default)`.
+1. **Given** email `gens+1@runsystem.work` receives Mail A and Mail B, **When** the user opens the UI, **Then** a thread labeled `gens+1@runsystem.work` displays both Mail A and Mail B in chronological order.
+2. **Given** email `gens+2@runsystem.work` receives Mail C, **When** the user opens the UI, **Then** a thread labeled `gens+2@runsystem.work` displays only Mail C, separate from the first thread.
+3. **Given** an email is sent to `gens@runsystem.work` (no tag), **When** the system processes it, **Then** the email appears under a thread labeled `gens@runsystem.work (default)`.
 
 ---
 
@@ -51,7 +51,7 @@ A tester wants to inspect the full content of a specific email within a thread. 
 
 ### User Story 3 - Real-time Email Arrival (Priority: P3)
 
-A tester sends a new email to `gens+1@rn.work` and expects the UI to reflect the new email within a short time without needing to manually refresh the page.
+A tester sends a new email to `gens+1@runsystem.work` and expects the UI to reflect the new email within a short time without needing to manually refresh the page.
 
 **Why this priority**: Real-time updates enhance usability for active testing sessions but are not strictly required for the system to function. Polling or manual refresh can serve as a fallback.
 
@@ -93,7 +93,7 @@ A tester sends an email with attachments to a plus-addressed recipient. The syst
 ### Functional Requirements
 
 - **FR-001**: System MUST connect to an IMAP server and fetch incoming emails from a configured mailbox.
-- **FR-002**: System MUST extract the `+tag` exclusively from the `To` header of each email (e.g., `gens+1@rn.work` → tag `1`). CC and BCC fields are ignored for tag extraction.
+- **FR-002**: System MUST extract the `+tag` exclusively from the `To` header of each email (e.g., `gens+1@runsystem.work` → tag `1`). CC and BCC fields are ignored for tag extraction.
 - **FR-003**: System MUST assign a `thread_id` based on the extracted tag, or `"default"` if no tag is present.
 - **FR-004**: System MUST NOT use mail client threading mechanisms (In-Reply-To, References, or subject-based threading).
 - **FR-005**: System MUST deduplicate emails based on the `message_id` header.
@@ -109,7 +109,7 @@ A tester sends an email with attachments to a plus-addressed recipient. The syst
 - **FR-015**: System MUST NOT require user authentication; the UI is openly accessible on the internal network.
 - **FR-016**: System MUST provide a toggle to switch between plain text and sandboxed HTML rendering when viewing email body content.
 - **FR-017**: System MUST allow users to delete individual threads (with all associated emails and attachments) and to bulk-clear all data via the UI.
-- **FR-018**: System MUST display threads using the full recipient address format (e.g., `gens+1@rn.work`); threads with no tag display as `gens@rn.work (default)`.
+- **FR-018**: System MUST display threads using the full recipient address format (e.g., `gens+1@runsystem.work`); threads with no tag display as `gens@runsystem.work (default)`.
 
 ### Key Entities
 
@@ -131,7 +131,7 @@ A tester sends an email with attachments to a plus-addressed recipient. The syst
 ## Assumptions
 
 - The mail server (cPanel with Dovecot/Exim) is already configured and accessible via IMAP.
-- A catch-all email rule is configured on the domain to route all `gens+*@rn.work` into a single inbox.
+- A catch-all email rule is configured on the domain to route all `gens+*@runsystem.work` into a single inbox.
 - The system targets a single domain (`rn.work`) for the initial version; multi-domain is a future enhancement.
 - The system is intended for internal testing use, not for high-volume production email processing.
 - Users access the UI through a modern web browser with JavaScript enabled.

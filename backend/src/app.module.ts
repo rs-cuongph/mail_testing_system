@@ -6,6 +6,7 @@ import { EmailsModule } from './emails/emails.module';
 import { AttachmentsModule } from './attachments/attachments.module';
 import { ImapModule } from './imap/imap.module';
 import { EventsModule } from './events/events.module';
+import { ConfigController } from './config/config.controller';
 
 @Module({
   imports: [
@@ -17,5 +18,6 @@ import { EventsModule } from './events/events.module';
     EmailsModule,
     AttachmentsModule,
   ],
+  controllers: [ConfigController],
 })
 export class AppModule {}

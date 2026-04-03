@@ -7,7 +7,7 @@
 - Node.js 18+ (LTS)
 - PostgreSQL 14+
 - Access to IMAP server (Dovecot on cPanel)
-- Catch-all email rule configured: `*@rn.work → gens@rn.work`
+- Catch-all email rule configured: `*@runsystem.work → gens@runsystem.work`
 
 ## Project Setup
 
@@ -34,7 +34,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mail_testing?schema=publ
 # IMAP
 IMAP_HOST="mail.rn.work"
 IMAP_PORT=993
-IMAP_USER="gens@rn.work"
+IMAP_USER="gens@runsystem.work"
 IMAP_PASSWORD="your-password"
 IMAP_TLS=true
 
@@ -77,8 +77,8 @@ npm run dev
 ### 5. Verify
 
 1. Open browser: `http://localhost:5173`
-2. Send a test email to `gens+test@rn.work`
-3. Verify it appears in the UI under thread `gens+test@rn.work` within 10 seconds
+2. Send a test email to `gens+test@runsystem.work`
+3. Verify it appears in the UI under thread `gens+test@runsystem.work` within 10 seconds
 
 ## Project Structure
 

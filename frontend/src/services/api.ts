@@ -11,7 +11,13 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
+export interface AppConfig {
+  mailDomain: string;
+  mailBaseAddress: string;
+}
+
 export const api = {
+  getConfig: () => request<AppConfig>('/config'),
   getThreads: () => request<ThreadsResponse>('/threads'),
   getThreadByTag: (tag: string) => request<ThreadDetail>(`/threads/${encodeURIComponent(tag)}`),
   getEmailById: (id: string) => request<EmailDetail>(`/emails/${id}`),

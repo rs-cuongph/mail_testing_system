@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThreadList } from './components/ThreadList';
 import { ThreadView } from './components/ThreadView';
 import { EmailDetail } from './components/EmailDetail';
+import { api, type AppConfig } from './services/api';
 import './index.css';
 
 export default function App() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
+  const [config, setConfig] = useState<AppConfig>({ mailDomain: '...', mailBaseAddress: '...' });
+
+  useEffect(() => {
+    api.getConfig()
+      .then(setConfig)
+      .catch(() => setConfig({ mailDomain: 'rn.work', mailBaseAddress: 'gens' }));
+  }, []);
 
   const handleSelectThread = (tag: string) => {
     setSelectedTag(tag);
@@ -21,6 +29,8 @@ export default function App() {
     setSelectedEmailId(null);
   };
 
+  const exampleAddress = `${config.mailBaseAddress}+tag@${config.mailDomain}`;
+
   return (
     <div className="app-layout">
       <header className="app-header">
@@ -32,6 +42,7 @@ export default function App() {
         <ThreadList
           selectedTag={selectedTag}
           onSelectThread={handleSelectThread}
+          config={config}
         />
 
         <main className="main-panel">
@@ -39,7 +50,7 @@ export default function App() {
             <div className="empty-state">
               <div className="empty-icon">📭</div>
               <h2>Select a thread</h2>
-              <p>Send emails to <code>gens+tag@rn.work</code> to see them grouped here.</p>
+              <p>Send emails to <code>{exampleAddress}</code> to see them grouped here.</p>
             </div>
           )}
 

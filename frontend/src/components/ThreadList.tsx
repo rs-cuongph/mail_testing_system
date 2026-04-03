@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Thread } from '../types';
-import { api } from '../services/api';
+import { api, type AppConfig } from '../services/api';
 import { getSocket } from '../services/socket';
 
 interface Props {
   selectedTag: string | null;
   onSelectThread: (tag: string) => void;
+  config: AppConfig;
 }
 
-export function ThreadList({ selectedTag, onSelectThread }: Props) {
+export function ThreadList({ selectedTag, onSelectThread, config }: Props) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +97,7 @@ export function ThreadList({ selectedTag, onSelectThread }: Props) {
       {loading && <div className="state-msg">Loading...</div>}
       {error && <div className="state-msg error">Error: {error}</div>}
       {!loading && threads.length === 0 && (
-        <div className="state-msg muted">No threads yet. Send an email to gens+tag@rn.work</div>
+        <div className="state-msg muted">No threads yet. Send an email to {config.mailBaseAddress}+tag@{config.mailDomain}</div>
       )}
 
       <ul className="thread-items">

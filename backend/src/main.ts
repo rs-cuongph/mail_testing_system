@@ -12,8 +12,12 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = process.env.PORT ?? 3000;
+  const port = parseInt(process.env.PORT ?? '3000', 10);
   await app.listen(port);
-  console.log(`🚀 Mail Testing System running on http://localhost:${port}`);
+  const url = await app.getUrl();
+  console.log(`🚀 Mail Testing System running on ${url}`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('❌ Failed to start:', err);
+  process.exit(1);
+});

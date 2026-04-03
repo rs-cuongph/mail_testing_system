@@ -54,7 +54,7 @@
 
 ## Phase 3: User Story 1 — View Email Threads by Tag (Priority: P1) 🎯 MVP
 
-**Goal**: Emails sent to `gens+{tag}@rn.work` are received via IMAP, grouped by tag into threads, and displayed in the UI as separate threads labeled with full address format.
+**Goal**: Emails sent to `gens+{tag}@runsystem.work` are received via IMAP, grouped by tag into threads, and displayed in the UI as separate threads labeled with full address format.
 
 **Independent Test**: Send 2+ emails to different `+tag` addresses → verify UI shows separate, correctly grouped threads.
 

@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { simpleParser, ParsedMail } from 'mailparser';
 
 export interface ExtractedEmail {
@@ -24,6 +25,27 @@ export interface ExtractedAttachment {
 
 @Injectable()
 export class MailParserService {
+  private readonly logger = new Logger(MailParserService.name);
+  private readonly domain: string;
+
+  constructor(private readonly config: ConfigService) {
+    const raw = this.config.get<string>('MAIL_DOMAIN', 'runsystem.work').trim();
+    // Validate domain: basic pattern check
+    if (raw && /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(raw)) {
+      this.domain = raw;
+    } else {
+      this.logger.warn(
+        `⚠️ MAIL_DOMAIN="${raw}" is invalid or empty — falling back to "rn.work"`,
+      );
+      this.domain = 'rn.work';
+    }
+    this.logger.log(`📧 Filtering emails for domain: @${this.domain}`);
+  }
+
+  getDomain(): string {
+    return this.domain;
+  }
+
   async parse(rawEmail: Buffer): Promise<ExtractedEmail | null> {
     const parsed: ParsedMail = await simpleParser(rawEmail);
 
@@ -34,7 +56,7 @@ export class MailParserService {
       : [];
 
     const targetAddress = toAddresses.find(
-      (addr) => addr.address && addr.address.includes('@rn.work'),
+      (addr) => addr.address && addr.address.endsWith(`@${this.domain}`),
     );
 
     if (!targetAddress?.address) return null;

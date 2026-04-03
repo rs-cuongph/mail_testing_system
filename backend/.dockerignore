@@ -13,4 +13,3 @@ README.md
 test/
 *.spec.ts
 *.test.ts
-docker-entrypoint.sh

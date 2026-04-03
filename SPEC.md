@@ -8,8 +8,8 @@ Xây dựng hệ thống nhận email từ domain (cPanel) và hiển thị UI t
 
 * Nhận email dạng:
 
-  * `gens+1@rn.work`
-  * `gens+2@rn.work`
+  * `gens+1@runsystem.work`
+  * `gens+2@runsystem.work`
 * Tự động parse `+tag`
 * Mỗi `tag` = 1 thread riêng trên UI
 * Không phụ thuộc thread của mail client (Gmail, Roundcube)
@@ -46,12 +46,12 @@ Frontend UI (Custom Thread View)
 * Enable **Catch-all email**
 
   ```
-  * @rn.work → gens@rn.work
+  * @runsystem.work → gens@runsystem.work
   ```
 
 👉 Mục đích:
 
-* Gom toàn bộ `gens+anything@rn.work` về 1 inbox duy nhất
+* Gom toàn bộ `gens+anything@runsystem.work` về 1 inbox duy nhất
 
 ---
 
@@ -227,8 +227,8 @@ Thread: gens+2
 
 ```
 Send:
-  gens+1@rn.work → Mail A
-  gens+2@rn.work → Mail B
+  gens+1@runsystem.work → Mail A
+  gens+2@runsystem.work → Mail B
 
 System:
   parse tag → 1, 2

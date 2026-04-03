@@ -19,11 +19,14 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Install postgresql-client for DB init script + production deps
+RUN apk add --no-cache postgresql-client
+
 # Install only production deps
 COPY package*.json ./
 RUN npm ci --only=production --legacy-peer-deps && npm cache clean --force
 
-# Copy built app and prisma
+# Copy built app and prisma artifacts
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
@@ -32,7 +35,7 @@ COPY prisma ./prisma
 # Create attachment storage dir
 RUN mkdir -p uploads/attachments
 
-# Run migrations then start the app
+# Copy and enable entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 

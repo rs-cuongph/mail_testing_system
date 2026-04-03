@@ -23,7 +23,7 @@ List all threads, ordered by most recently updated.
     {
       "id": "uuid",
       "tag": "1",
-      "fullAddress": "gens+1@rn.work",
+      "fullAddress": "gens+1@runsystem.work",
       "emailCount": 5,
       "latestSubject": "Test email subject",
       "createdAt": "2026-04-02T10:00:00Z",
@@ -49,7 +49,7 @@ Get a single thread with its emails, sorted by `receivedAt DESC` (newest first).
   "thread": {
     "id": "uuid",
     "tag": "1",
-    "fullAddress": "gens+1@rn.work",
+    "fullAddress": "gens+1@runsystem.work",
     "createdAt": "2026-04-02T10:00:00Z",
     "updatedAt": "2026-04-02T12:30:00Z"
   },
@@ -58,7 +58,7 @@ Get a single thread with its emails, sorted by `receivedAt DESC` (newest first).
       "id": "uuid",
       "messageId": "<abc@mail.example.com>",
       "fromEmail": "sender@example.com",
-      "toEmail": "gens+1@rn.work",
+      "toEmail": "gens+1@runsystem.work",
       "subject": "Test email",
       "receivedAt": "2026-04-02T12:30:00Z",
       "hasAttachments": true,
@@ -92,7 +92,7 @@ Get full email details including body and attachments.
   "id": "uuid",
   "messageId": "<abc@mail.example.com>",
   "fromEmail": "sender@example.com",
-  "toEmail": "gens+1@rn.work",
+  "toEmail": "gens+1@runsystem.work",
   "subject": "Test email",
   "textBody": "Plain text content...",
   "htmlBody": "<html>...</html>",
@@ -151,7 +151,7 @@ Delete a thread and all its associated emails and attachments.
 **Response** `200 OK`:
 ```json
 {
-  "message": "Thread 'gens+1@rn.work' deleted",
+  "message": "Thread 'gens+1@runsystem.work' deleted",
   "deletedEmails": 5,
   "deletedAttachments": 3
 }
@@ -197,7 +197,7 @@ Emitted when a new email is received and processed.
 ```json
 {
   "threadTag": "1",
-  "threadFullAddress": "gens+1@rn.work",
+  "threadFullAddress": "gens+1@runsystem.work",
   "email": {
     "id": "uuid",
     "fromEmail": "sender@example.com",
@@ -217,7 +217,7 @@ Emitted when a new thread is created (first email with a new tag).
   "thread": {
     "id": "uuid",
     "tag": "1",
-    "fullAddress": "gens+1@rn.work",
+    "fullAddress": "gens+1@runsystem.work",
     "createdAt": "2026-04-02T12:30:00Z"
   }
 }

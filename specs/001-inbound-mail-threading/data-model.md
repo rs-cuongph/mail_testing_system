@@ -34,7 +34,7 @@ Represents a logical grouping of emails sharing the same `+tag`.
 | id           | UUID      | PK, auto-generated             | Unique identifier                                  |
 | tag          | String    | NOT NULL, UNIQUE               | The extracted `+tag` value, or `"default"`          |
 | baseAddress  | String    | NOT NULL                       | The base email address (e.g., `gens`)               |
-| fullAddress  | String    | NOT NULL                       | Display label (e.g., `gens+1@rn.work`)              |
+| fullAddress  | String    | NOT NULL                       | Display label (e.g., `gens+1@runsystem.work`)              |
 | createdAt    | DateTime  | NOT NULL, auto                 | When the thread was first created                   |
 | updatedAt    | DateTime  | NOT NULL, auto                 | When the last email was added to this thread         |
 

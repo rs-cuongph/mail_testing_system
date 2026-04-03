@@ -12,6 +12,7 @@ import { EmailsService } from '../emails/emails.service';
 import { EventsGateway } from '../events/events.gateway';
 import { AttachmentsService } from '../attachments/attachments.service';
 
+
 @Injectable()
 export class ImapService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ImapService.name);
@@ -19,6 +20,8 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
   private isRunning = false;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private readonly RECONNECT_DELAY_MS = 5000;
+  private readonly configuredDomain: string;
+  private readonly configuredBaseAddress: string;
 
   constructor(
     private readonly config: ConfigService,
@@ -27,10 +30,17 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     private readonly emailsService: EmailsService,
     private readonly attachmentsService: AttachmentsService,
     private readonly eventsGateway: EventsGateway,
-  ) {}
+  ) {
+    this.configuredDomain = this.config.get<string>('MAIL_DOMAIN', 'runsystem.work').trim() || 'runsystem.work';
+    this.configuredBaseAddress = this.config.get<string>('MAIL_BASE_ADDRESS', 'gens').trim() || 'gens';
+  }
 
   async onModuleInit() {
-    await this.connect();
+    // Don't await — connect() contains an infinite IDLE loop.
+    // Fire-and-forget so NestJS can finish binding the HTTP port.
+    this.connect().catch((err) =>
+      this.logger.error(`IMAP startup failed: ${err.message}`),
+    );
   }
 
   async onModuleDestroy() {
@@ -146,10 +156,11 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
       const existing = await this.emailsService.findByMessageId(extracted.messageId);
       if (existing) return;
 
-      const domain = extracted.toEmail.split('@')[1] ?? 'rn.work';
+      const domain = extracted.toEmail.split('@')[1] ?? this.configuredDomain;
+      const baseAddr = this.configuredBaseAddress;
       const fullAddress = extracted.tag
-        ? `${extracted.baseAddress}+${extracted.tag}@${domain}`
-        : `${extracted.baseAddress}@${domain}`;
+        ? `${baseAddr}+${extracted.tag}@${domain}`
+        : `${baseAddr}@${domain}`;
       const tag = extracted.tag ?? 'default';
       const threadFullAddress = extracted.tag ? fullAddress : `${fullAddress} (default)`;
 
