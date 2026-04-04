@@ -12,7 +12,6 @@ import { EmailsService } from '../emails/emails.service';
 import { EventsGateway } from '../events/events.gateway';
 import { AttachmentsService } from '../attachments/attachments.service';
 
-
 @Injectable()
 export class ImapService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ImapService.name);
@@ -31,8 +30,11 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     private readonly attachmentsService: AttachmentsService,
     private readonly eventsGateway: EventsGateway,
   ) {
-    this.configuredDomain = this.config.get<string>('MAIL_DOMAIN', 'runsystem.work').trim() || 'runsystem.work';
-    this.configuredBaseAddress = this.config.get<string>('MAIL_BASE_ADDRESS', 'gens').trim() || 'gens';
+    this.configuredDomain =
+      this.config.get<string>('MAIL_DOMAIN', 'runsystem.work').trim() ||
+      'runsystem.work';
+    this.configuredBaseAddress =
+      this.config.get<string>('MAIL_BASE_ADDRESS', 'gens').trim() || 'gens';
   }
 
   async onModuleInit() {
@@ -93,7 +95,10 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
   private scheduleReconnect() {
     if (!this.isRunning) return;
     this.logger.warn(`Reconnecting in ${this.RECONNECT_DELAY_MS}ms...`);
-    this.reconnectTimer = setTimeout(() => this.connect(), this.RECONNECT_DELAY_MS);
+    this.reconnectTimer = setTimeout(
+      () => this.connect(),
+      this.RECONNECT_DELAY_MS,
+    );
   }
 
   private async listenWithIdle() {
@@ -141,7 +146,11 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
 
   private async fetchUnseen() {
     if (!this.client) return;
-    for await (const msg of this.client.fetch('1:*', { envelope: true, source: true }, { uid: true })) {
+    for await (const msg of this.client.fetch(
+      '1:*',
+      { envelope: true, source: true },
+      { uid: true },
+    )) {
       if (!msg.source) continue;
       await this.processRawEmail(msg.source);
     }
@@ -153,7 +162,9 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
       if (!extracted) return;
 
       // Deduplication — skip if messageId already exists
-      const existing = await this.emailsService.findByMessageId(extracted.messageId);
+      const existing = await this.emailsService.findByMessageId(
+        extracted.messageId,
+      );
       if (existing) return;
 
       const domain = extracted.toEmail.split('@')[1] ?? this.configuredDomain;
@@ -162,7 +173,9 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
         ? `${baseAddr}+${extracted.tag}@${domain}`
         : `${baseAddr}@${domain}`;
       const tag = extracted.tag ?? 'default';
-      const threadFullAddress = extracted.tag ? fullAddress : `${fullAddress} (default)`;
+      const threadFullAddress = extracted.tag
+        ? fullAddress
+        : `${fullAddress} (default)`;
 
       // Find or create thread
       const { thread, isNew } = await this.threadsService.findOrCreate({

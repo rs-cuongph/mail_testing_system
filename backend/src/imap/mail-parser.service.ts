@@ -51,8 +51,9 @@ export class MailParserService {
 
     // Extract target address from To header (To field only, not CC/BCC)
     const toAddresses = parsed.to
-      ? (Array.isArray(parsed.to) ? parsed.to : [parsed.to])
-          .flatMap((addr) => addr.value)
+      ? (Array.isArray(parsed.to) ? parsed.to : [parsed.to]).flatMap(
+          (addr) => addr.value,
+        )
       : [];
 
     const targetAddress = toAddresses.find(
@@ -88,7 +89,10 @@ export class MailParserService {
     };
   }
 
-  private extractTag(email: string): { tag: string | null; baseAddress: string } {
+  private extractTag(email: string): {
+    tag: string | null;
+    baseAddress: string;
+  } {
     const [local] = email.split('@');
     const [base, tag] = local.split('+');
     return { baseAddress: base, tag: tag ?? null };

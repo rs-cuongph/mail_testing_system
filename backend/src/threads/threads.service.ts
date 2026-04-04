@@ -51,7 +51,8 @@ export class ThreadsService {
       },
     });
 
-    if (!thread) throw new NotFoundException(`Thread with tag '${tag}' not found`);
+    if (!thread)
+      throw new NotFoundException(`Thread with tag '${tag}' not found`);
 
     return {
       thread: {
@@ -91,14 +92,18 @@ export class ThreadsService {
 
   async deleteByTag(tag: string) {
     const thread = await this.prisma.thread.findUnique({ where: { tag } });
-    if (!thread) throw new NotFoundException(`Thread with tag '${tag}' not found`);
+    if (!thread)
+      throw new NotFoundException(`Thread with tag '${tag}' not found`);
 
     const emails = await this.prisma.email.findMany({
       where: { threadId: thread.id },
       include: { attachments: true },
     });
     const emailCount = emails.length;
-    const attachmentCount = emails.reduce((n, e) => n + e.attachments.length, 0);
+    const attachmentCount = emails.reduce(
+      (n, e) => n + e.attachments.length,
+      0,
+    );
 
     await this.prisma.thread.delete({ where: { tag } });
     return {
@@ -109,11 +114,12 @@ export class ThreadsService {
   }
 
   async deleteAll() {
-    const [threadCount, emailCount, attachmentCount] = await this.prisma.$transaction([
-      this.prisma.thread.count(),
-      this.prisma.email.count(),
-      this.prisma.attachment.count(),
-    ]);
+    const [threadCount, emailCount, attachmentCount] =
+      await this.prisma.$transaction([
+        this.prisma.thread.count(),
+        this.prisma.email.count(),
+        this.prisma.attachment.count(),
+      ]);
     await this.prisma.attachment.deleteMany();
     await this.prisma.email.deleteMany();
     await this.prisma.thread.deleteMany();

@@ -15,7 +15,10 @@ export class AttachmentsService {
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
   ) {
-    this.storageDir = this.config.get('ATTACHMENT_STORAGE_DIR', './uploads/attachments');
+    this.storageDir = this.config.get(
+      'ATTACHMENT_STORAGE_DIR',
+      './uploads/attachments',
+    );
   }
 
   async save(attachment: ExtractedAttachment, emailId: string) {
