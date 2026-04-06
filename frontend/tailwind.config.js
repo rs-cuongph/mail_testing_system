@@ -15,6 +15,11 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        heading: ['"Press Start 2P"', 'cursive'],
+        body: ['"VT323"', 'monospace'],
+        sans: ['"VT323"', 'monospace'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
