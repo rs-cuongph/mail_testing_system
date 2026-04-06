@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Server, Check, Trash2, Edit2, Loader2, Save, AlertCircle, Download, Upload } from 'lucide-react';
+import { ArrowLeft, Plus, Server, Check, Trash2, Edit2, Loader2, Save, AlertCircle, Download, Upload, FileJson } from 'lucide-react';
 import { profilesApi, type ImapProfile } from '../services/profiles.api';
 import { useProfile } from '../contexts/ProfileContext';
 import { Input } from '@/components/ui/input';
@@ -41,6 +41,34 @@ export function ProfilesPage() {
       URL.revokeObjectURL(url);
     } catch (err: any) {
       setError(err.message || 'Failed to export profiles');
+    }
+  };
+
+  const handleExportTemplate = () => {
+    try {
+      const template = [{
+        "name": "Template Profile",
+        "provider": "gmail",
+        "imapHost": "imap.gmail.com",
+        "imapPort": 993,
+        "imapUser": "your.email@gmail.com",
+        "imapTls": true,
+        "imapMode": "idle",
+        "imapPollInterval": 5000,
+        "mailDomain": "runsystem.work",
+        "mailBaseAddress": "gens"
+      }];
+      const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mail-testing-profiles-template.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      setError(err.message || 'Failed to download template');
     }
   };
 
@@ -159,7 +187,7 @@ export function ProfilesPage() {
 
   return (
     <div className="setup-container flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-2xl flex w-full max-w-5xl h-[80vh] overflow-hidden text-slate-200">
+      <div className="bg-slate-900 border-4 border-black shadow-[8px_8px_0_#000] flex w-full max-w-5xl h-[80vh] overflow-hidden text-slate-200">
         
         {/* Left Sidebar: Profile List */}
         <div className="w-1/3 border-r border-slate-800 flex flex-col bg-slate-950">
@@ -167,7 +195,7 @@ export function ProfilesPage() {
             <button onClick={() => navigate('/')} className="text-slate-400 hover:text-slate-200 flex items-center gap-2 text-sm transition-colors">
               <ArrowLeft size={16} /> Back
             </button>
-            <Button size="sm" onClick={handleAddNew} className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+            <Button size="sm" onClick={handleAddNew} className="bg-green-500 hover:bg-green-400 text-black border-2 border-black shadow-[2px_2px_0_#000] rounded-none hover:translate-x-[-1px] hover:translate-y-[-1px] font-bold gap-2">
               <Plus size={14} /> New Profile
             </Button>
           </div>
@@ -182,13 +210,13 @@ export function ProfilesPage() {
                 <div 
                   key={p.id}
                   onClick={() => handleSelect(p)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedProfile?.id === p.id && !isEditing ? 'border-blue-500 bg-blue-500/10' : 'border-slate-800 hover:border-slate-700 hover:bg-slate-900/50'}`}
+                  className={`p-3 border-2 cursor-pointer transition-all ${selectedProfile?.id === p.id && !isEditing ? 'border-black bg-green-500 text-black shadow-[4px_4px_0_#000] translate-x-[-2px] translate-y-[-2px]' : 'border-transparent hover:border-black hover:bg-slate-800'}`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium text-slate-200">{p.name}</span>
-                    {p.isActive && <span className="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full font-medium tracking-wide">ACTIVE</span>}
+                    <span className={`font-medium heading-font text-[10px] ${selectedProfile?.id === p.id && !isEditing ? 'text-black' : 'text-slate-200'}`}>{p.name}</span>
+                    {p.isActive && <span className="bg-black text-green-400 text-[10px] px-2 py-0.5 border border-green-400 font-medium tracking-wide">ACTIVE</span>}
                   </div>
-                  <div className="text-xs text-slate-400 flex items-center gap-1.5"><Server size={12} /> {p.imapUser}</div>
+                  <div className={`text-xs flex items-center gap-1.5 ${selectedProfile?.id === p.id && !isEditing ? 'text-slate-800' : 'text-slate-400'}`}><Server size={12} /> {p.imapUser}</div>
                 </div>
               ))
             )}
@@ -196,10 +224,13 @@ export function ProfilesPage() {
           
           <div className="p-4 border-t border-slate-800 flex items-center justify-between gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" />
-            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2">
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 border-2 border-black rounded-none shadow-[2px_2px_0_#000] bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2">
               <Upload size={14} /> Import
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExport} className="flex-1 border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2" disabled={profiles.length === 0}>
+            <Button variant="outline" size="sm" onClick={handleExportTemplate} className="flex-1 border-2 border-black rounded-none shadow-[2px_2px_0_#000] bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2">
+              <FileJson size={14} /> Template
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExport} className="flex-1 border-2 border-black rounded-none shadow-[2px_2px_0_#000] bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2" disabled={profiles.length === 0}>
               <Download size={14} /> Export
             </Button>
           </div>
@@ -208,7 +239,7 @@ export function ProfilesPage() {
         {/* Right Content */}
         <div className="w-2/3 flex flex-col bg-slate-900 overflow-y-auto">
           {error && (
-            <div className="m-6 mb-0 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg flex items-center gap-2 text-sm">
+            <div className="m-6 mb-0 p-3 bg-red-500 border-2 border-black shadow-[4px_4px_0_#000] text-black font-bold flex items-center gap-2 text-sm">
               <AlertCircle size={16} /> {error}
             </div>
           )}
@@ -217,20 +248,20 @@ export function ProfilesPage() {
             <div className="p-8">
               <div className="flex items-start justify-between mb-8">
                 <div>
-                  <h2 className="text-2xl font-semibold mb-2">{selectedProfile.name}</h2>
+                  <h2 className="text-xl font-semibold mb-2 heading-font">{selectedProfile.name}</h2>
                   <p className="text-slate-400 text-sm flex items-center gap-2"><Server size={14}/> {selectedProfile.imapUser} @ {selectedProfile.imapHost}:{selectedProfile.imapPort}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(selectedProfile)} className="border-slate-700 bg-slate-800 hover:bg-slate-700 gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(selectedProfile)} className="border-2 border-black shadow-[2px_2px_0_#000] rounded-none bg-slate-800 hover:bg-slate-700 gap-2">
                     <Edit2 size={14} /> Edit
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleDelete(selectedProfile.id)} className="border-red-900/50 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleDelete(selectedProfile.id)} className="border-2 border-black shadow-[2px_2px_0_#000] rounded-none bg-red-500 text-black hover:bg-red-400 hover:text-black gap-2">
                     <Trash2 size={14} /> Delete
                   </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 bg-slate-950 p-6 rounded-xl border border-slate-800">
+              <div className="grid grid-cols-2 gap-6 bg-slate-900 p-6 border-2 border-black shadow-[6px_6px_0_#000]">
                 <div>
                   <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Connection</span>
                   <div className="mt-2 space-y-1 text-sm text-slate-300">
@@ -294,7 +325,7 @@ export function ProfilesPage() {
                       </SelectTrigger>
                       <SelectContent className="bg-slate-900 border-slate-800">
                         {PROVIDER_PRESETS.map(p => (
-                          <SelectItem key={p.id} value={p.id} className="text-slate-200">{p.name}</SelectItem>
+                          <SelectItem key={p.id} value={p.id} disabled={p.id !== 'custom'} className="text-slate-200">{p.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -367,15 +398,22 @@ export function ProfilesPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-center gap-3 mt-6">
-                    <Checkbox
-                      id="tls"
-                      checked={formData.imapTls}
-                      onCheckedChange={(c) => setFormData(p => ({ ...p, imapTls: c as boolean }))}
-                      className="border-slate-600 data-[state=checked]:bg-blue-600"
-                    />
-                    <Label htmlFor="tls" className="text-sm font-normal text-slate-300">Enable TLS/SSL</Label>
-                  </div>
+                  {formData.imapMode === 'poll' && (
+                    <div className="flex flex-col gap-1.5">
+                      <Label className="text-xs font-medium text-slate-400">Poll Interval (ms)</Label>
+                      <Input required type="number" min="1000" name="imapPollInterval" value={formData.imapPollInterval || 5000} onChange={handleChangeText} className="bg-slate-950 border-slate-800" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3 mt-4">
+                  <Checkbox
+                    id="tls"
+                    checked={formData.imapTls}
+                    onCheckedChange={(c) => setFormData(p => ({ ...p, imapTls: c as boolean }))}
+                    className="border-slate-600 data-[state=checked]:bg-blue-600"
+                  />
+                  <Label htmlFor="tls" className="text-sm font-normal text-slate-300">Enable TLS/SSL</Label>
                 </div>
 
                 <div className="flex items-center justify-end gap-3 mt-4 pt-6 border-t border-slate-800">

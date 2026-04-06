@@ -6,7 +6,6 @@ import { SearchBar } from './SearchBar';
 import { FilterTabs } from './FilterTabs';
 import { CategoryManager } from './CategoryManager';
 import { CategoryBadge } from './CategoryBadge';
-import { ProfileSwitcher } from './ProfileSwitcher';
 import { Trash2, X, CheckSquare, Layers, Tag, Settings } from 'lucide-react';
 
 interface Props {
@@ -184,7 +183,6 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
           Threads
         </h2>
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-          <ProfileSwitcher />
           <button className={`btn-icon ${groupedView ? 'active' : ''}`} onClick={() => setGroupedView(!groupedView)} title="Group by category">
             <Layers size={16} />
           </button>

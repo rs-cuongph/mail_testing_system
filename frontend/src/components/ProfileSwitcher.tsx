@@ -48,7 +48,7 @@ export function ProfileSwitcher() {
 
   if (loading && profiles.length === 0) {
     return (
-      <div className="flex items-center w-[200px] h-9 border border-slate-800 rounded-md px-3 bg-slate-900 shadow-sm text-slate-400">
+      <div className="flex items-center w-[200px] h-9 border-2 border-black px-3 bg-slate-900 shadow-[2px_2px_0_#000] text-slate-400">
         <Loader2 className="w-4 h-4 animate-spin mr-2" />
         <span className="text-xs">Loading...</span>
       </div>
@@ -60,14 +60,16 @@ export function ProfileSwitcher() {
   }
 
   return (
-    <div className="w-[140px] relative overflow-hidden">
+    <div className="relative overflow-hidden w-[150px] flex items-center">
       <Select name="profile-switcher-input" value={activeProfileId || ''} onValueChange={handleSwitch} disabled={loading}>
-        <SelectTrigger className="bg-slate-900 border-slate-800 shadow-sm text-sm focus:ring-1 focus:ring-blue-500/50">
-          <SelectValue placeholder="Select Profile" />
+        <SelectTrigger className="w-full bg-slate-900 border-2 border-black rounded-none shadow-[2px_2px_0_#000] text-sm focus:ring-0">
+          <SelectValue placeholder="Select Profile">
+            {profiles.find(p => p.id === activeProfileId)?.name || 'Select Profile'}
+          </SelectValue>
         </SelectTrigger>
-        <SelectContent className="bg-slate-900 border-slate-800">
+        <SelectContent className="bg-slate-900 border-2 border-black rounded-none shadow-[4px_4px_0_#000]">
           {profiles.map(p => (
-            <SelectItem key={p.id} value={p.id} className="text-slate-200">
+            <SelectItem key={p.id} value={p.id} className="text-slate-200 rounded-none focus:bg-accent focus:text-black">
               {p.name}
             </SelectItem>
           ))}

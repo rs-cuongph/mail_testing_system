@@ -7,10 +7,10 @@ import { SearchResults } from './components/SearchResults';
 import { type AppConfig } from './services/api';
 import { Inbox, Mailbox, Settings } from 'lucide-react';
 import { SetupPage } from './pages/SetupPage';
-import { SettingsPage } from './pages/SettingsPage';
 import { ProfilesPage } from './pages/ProfilesPage';
 import { IMAPStatus } from './components/IMAPStatus';
 import { ProfileProvider } from './contexts/ProfileContext';
+import { ProfileSwitcher } from './components/ProfileSwitcher';
 import './index.css';
 
 function MainApp() {
@@ -77,9 +77,9 @@ function MainApp() {
         <div className="app-logo"><Inbox size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> Mail Testing System</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <IMAPStatus />
-          <div className="app-subtitle" style={{ margin: '0 8px' }}>Plus Addressing Thread View</div>
-          <Link to="/settings" style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', padding: '6px', borderRadius: '6px', transition: 'background 0.2s' }} className="settings-link">
-            <Settings size={20} />
+          <ProfileSwitcher />
+          <Link to="/profiles" className="btn-secondary-sm" style={{ textDecoration: 'none' }}>
+            <Settings size={14} /> Profiles
           </Link>
         </div>
       </header>
@@ -135,7 +135,6 @@ export default function App() {
         <Route path="/" element={<MainApp />} />
         <Route path="/profiles" element={<ProfilesPage />} />
         <Route path="/setup" element={<SetupPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </ProfileProvider>
   );

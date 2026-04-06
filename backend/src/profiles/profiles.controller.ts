@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, Req } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
 
@@ -29,8 +29,8 @@ export class ProfilesController {
   }
 
   @Post('import')
-  importProfiles(@Body() data: any) {
-    return this.profilesService.importProfiles(data);
+  importProfiles(@Req() req: any) {
+    return this.profilesService.importProfiles(req.body);
   }
 
   @Get(':id')
