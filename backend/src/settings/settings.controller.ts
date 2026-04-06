@@ -4,7 +4,7 @@ import { SettingsService } from './settings.service';
 import { UpdateSettingsDto } from './dto/settings.dto';
 import { ImapService } from '../imap/imap.service';
 
-@Controller('api/settings')
+@Controller('settings')
 export class SettingsController {
   constructor(
     private readonly settingsService: SettingsService,
