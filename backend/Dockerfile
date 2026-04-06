@@ -39,6 +39,6 @@ RUN mkdir -p uploads/attachments
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-EXPOSE 3000
+EXPOSE 7654
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

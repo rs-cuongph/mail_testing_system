@@ -12,7 +12,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = parseInt(process.env.PORT ?? '3000', 10);
+  const port = parseInt(process.env.PORT ?? '7654', 10);
   await app.listen(port);
   const url = await app.getUrl();
   console.log(`🚀 Mail Testing System running on ${url}`);
