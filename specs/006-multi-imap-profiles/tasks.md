@@ -116,10 +116,10 @@ There is no major setup needed since the project structure already exists. Movin
 
 **Purpose**: Cleanup legacy implementations affecting the whole system.
 
-- [ ] T031 Refactor `SettingsService` to delegate to `ProfilesService` for backward compatibility in `backend/src/settings/settings.service.ts`
-- [ ] T032 Remove old `SystemConfig` handling logic in backend services
-- [ ] T033 Code cleanup in `backend/src/imap/imap.service.ts`
-- [ ] T034 Update Documentation (e.g., readme if needed)
+- [x] T031 Refactor `SettingsService` to delegate to `ProfilesService` for backward compatibility in `backend/src/settings/settings.service.ts`
+- [x] T032 Remove old `SystemConfig` handling logic in backend services
+- [x] T033 Code cleanup in `backend/src/imap/imap.service.ts`
+- [x] T034 Update Documentation (e.g., readme if needed)
 
 ---
 

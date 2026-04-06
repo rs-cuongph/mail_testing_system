@@ -4,7 +4,6 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ImapFlow } from 'imapflow';
 import { MailParserService } from './mail-parser.service';
@@ -50,20 +49,13 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
   }
 
   constructor(
-    private readonly config: ConfigService,
     private readonly mailParser: MailParserService,
     private readonly threadsService: ThreadsService,
     private readonly emailsService: EmailsService,
     private readonly attachmentsService: AttachmentsService,
     private readonly eventsGateway: EventsGateway,
     private readonly prisma: PrismaService,
-  ) {
-    this.configuredDomain =
-      this.config.get<string>('MAIL_DOMAIN', 'runsystem.work').trim() ||
-      'runsystem.work';
-    this.configuredBaseAddress =
-      this.config.get<string>('MAIL_BASE_ADDRESS', 'gens').trim() || 'gens';
-  }
+  ) {}
 
   async onModuleInit() {
     this.connect().catch((err) =>

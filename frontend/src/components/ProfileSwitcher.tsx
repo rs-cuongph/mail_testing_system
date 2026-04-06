@@ -60,8 +60,8 @@ export function ProfileSwitcher() {
   }
 
   return (
-    <div className="w-[200px]">
-      <Select value={activeProfileId || ''} onValueChange={handleSwitch} disabled={loading}>
+    <div className="w-[140px] relative overflow-hidden">
+      <Select name="profile-switcher-input" value={activeProfileId || ''} onValueChange={handleSwitch} disabled={loading}>
         <SelectTrigger className="bg-slate-900 border-slate-800 shadow-sm text-sm focus:ring-1 focus:ring-blue-500/50">
           <SelectValue placeholder="Select Profile" />
         </SelectTrigger>

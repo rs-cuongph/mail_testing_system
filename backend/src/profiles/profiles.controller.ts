@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nest
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
 
-@Controller('api/profiles')
+@Controller('profiles')
 export class ProfilesController {
   private readonly logger = new Logger(ProfilesController.name);
 

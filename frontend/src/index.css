@@ -845,3 +845,6 @@ body,
     color: oklch(0.94 0.01 260);
   }
 }
+
+/* Hide shadcn/base-ui select native fallback */
+select[name="profile-switcher-input"] { display: none !important; }
