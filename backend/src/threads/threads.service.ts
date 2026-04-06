@@ -10,10 +10,10 @@ export class ThreadsService {
       orderBy: { updatedAt: 'desc' },
       include: {
         _count: { select: { emails: true } },
+        category: true,
         emails: {
           orderBy: { receivedAt: 'desc' },
-          take: 1,
-          select: { subject: true },
+          select: { subject: true, isRead: true },
         },
       },
     });
@@ -24,7 +24,9 @@ export class ThreadsService {
         tag: t.tag,
         fullAddress: t.fullAddress,
         emailCount: t._count.emails,
+        unreadCount: t.emails.filter(e => !e.isRead).length,
         latestSubject: t.emails[0]?.subject ?? null,
+        category: t.category,
         createdAt: t.createdAt,
         updatedAt: t.updatedAt,
       })),
@@ -36,6 +38,7 @@ export class ThreadsService {
     const thread = await this.prisma.thread.findUnique({
       where: { tag },
       include: {
+        category: true,
         emails: {
           orderBy: { receivedAt: 'desc' },
           select: {
@@ -45,6 +48,7 @@ export class ThreadsService {
             toEmail: true,
             subject: true,
             receivedAt: true,
+            isRead: true,
             attachments: { select: { id: true } },
           },
         },
@@ -59,6 +63,7 @@ export class ThreadsService {
         id: thread.id,
         tag: thread.tag,
         fullAddress: thread.fullAddress,
+        category: thread.category,
         createdAt: thread.createdAt,
         updatedAt: thread.updatedAt,
       },
@@ -69,6 +74,7 @@ export class ThreadsService {
         toEmail: e.toEmail,
         subject: e.subject,
         receivedAt: e.receivedAt,
+        isRead: e.isRead,
         hasAttachments: e.attachments.length > 0,
         attachmentCount: e.attachments.length,
       })),

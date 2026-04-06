@@ -1,9 +1,18 @@
+export interface Category {
+  id: string;
+  name: string;
+  color: string;
+  threadCount?: number;
+}
+
 export interface Thread {
   id: string;
   tag: string;
   fullAddress: string;
   emailCount: number;
+  unreadCount: number;
   latestSubject: string | null;
+  category: Category | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -15,6 +24,7 @@ export interface EmailSummary {
   toEmail: string;
   subject: string;
   receivedAt: string;
+  isRead: boolean;
   hasAttachments: boolean;
   attachmentCount: number;
 }
@@ -41,6 +51,7 @@ export interface EmailDetail {
   textBody: string | null;
   htmlBody: string | null;
   receivedAt: string;
+  isRead: boolean;
   rawHeaders: Record<string, string>;
   attachments: AttachmentInfo[];
 }
@@ -48,4 +59,17 @@ export interface EmailDetail {
 export interface ThreadsResponse {
   data: Thread[];
   total: number;
+}
+
+export interface SearchResult {
+  id: string;
+  messageId: string;
+  fromEmail: string;
+  toEmail: string;
+  subject: string;
+  receivedAt: string;
+  textBody: string | null;
+  isRead: boolean;
+  threadTag: string;
+  threadFullAddress: string;
 }

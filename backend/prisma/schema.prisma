@@ -14,10 +14,14 @@ model Thread {
   tag         String   @unique
   baseAddress String
   fullAddress String
+  categoryId  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  emails Email[]
+  emails      Email[]
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([categoryId])
 }
 
 model Email {
@@ -28,6 +32,7 @@ model Email {
   subject     String   @default("")
   textBody    String?
   htmlBody    String?
+  isRead      Boolean  @default(false)
   threadId    String
   receivedAt  DateTime
   rawHeaders  Json
@@ -49,4 +54,13 @@ model Attachment {
   createdAt   DateTime @default(now())
 
   email Email @relation(fields: [emailId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  color     String   @default("#60A5FA")
+  createdAt DateTime @default(now())
+
+  threads   Thread[]
 }

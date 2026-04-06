@@ -15,6 +15,7 @@ export class EventsGateway {
         fromEmail: email.fromEmail,
         subject: email.subject,
         receivedAt: email.receivedAt,
+        isRead: email.isRead,
         hasAttachments: false,
       },
     });

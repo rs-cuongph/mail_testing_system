@@ -3,6 +3,7 @@ import type { EmailDetail as EmailDetailType } from '../types';
 import { api } from '../services/api';
 import { EmailBodyViewer } from './EmailBodyViewer';
 import { AttachmentList } from './AttachmentList';
+import { ArrowLeft } from 'lucide-react';
 
 interface Props {
   emailId: string;
@@ -17,7 +18,13 @@ export function EmailDetail({ emailId, onClose }: Props) {
   useEffect(() => {
     setLoading(true);
     api.getEmailById(emailId)
-      .then((e) => { setEmail(e); setError(null); })
+      .then((e) => { 
+        setEmail(e); 
+        setError(null); 
+        if (!e.isRead) {
+          api.markAsRead(e.id).catch(console.error);
+        }
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [emailId]);
@@ -28,7 +35,9 @@ export function EmailDetail({ emailId, onClose }: Props) {
   return (
     <div className="email-detail">
       <div className="email-detail-header">
-        <button className="btn-back" onClick={onClose}>← Back</button>
+        <button className="btn-back" onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <ArrowLeft size={16} /> Back
+        </button>
         {email && <h3 className="email-detail-subject">{email.subject || '(no subject)'}</h3>}
       </div>
 

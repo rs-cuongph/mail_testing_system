@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { EmailSummary } from '../types';
 import { api } from '../services/api';
 import { getSocket } from '../services/socket';
+import { MessageSquare, Paperclip, CheckCircle } from 'lucide-react';
 
 interface Props {
   tag: string;
@@ -33,17 +34,54 @@ export function ThreadView({ tag, onSelectEmail, selectedEmailId }: Props) {
       }
     });
 
-    return () => { socket.off('email:new'); };
+    socket.on('email:read', ({ emailId }: { emailId: string }) => {
+      setEmails((prev) => prev.map((e) => e.id === emailId ? { ...e, isRead: true } : e));
+    });
+
+    socket.on('thread:read', ({ threadTag }: { threadTag: string }) => {
+      if (threadTag === tag) {
+        setEmails((prev) => prev.map((e) => ({ ...e, isRead: true })));
+      }
+    });
+
+    socket.on('all:read', () => {
+      setEmails((prev) => prev.map((e) => ({ ...e, isRead: true })));
+    });
+
+    return () => { 
+      socket.off('email:new'); 
+      socket.off('email:read');
+      socket.off('thread:read');
+      socket.off('all:read');
+    };
   }, [tag]);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
+  const unreadCount = emails.filter((e) => !e.isRead).length;
+
+  const handleMarkThreadAsRead = async () => {
+    try {
+      await api.markThreadAsRead(tag);
+      setEmails((prev) => prev.map((e) => ({ ...e, isRead: true })));
+    } catch (e: any) {
+      console.error(e);
+    }
+  };
+
   return (
     <section className="thread-view">
       <div className="thread-view-header">
-        <h3>🧵 {threadAddress}</h3>
-        <span className="email-count">{emails.length} messages</span>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><MessageSquare size={20} /> {threadAddress}</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span className="email-count">{emails.length} messages</span>
+          {unreadCount > 0 && (
+            <button className="btn-secondary-sm" onClick={handleMarkThreadAsRead}>
+              Mark all as read
+            </button>
+          )}
+        </div>
       </div>
 
       {loading && <div className="state-msg">Loading messages...</div>}
@@ -54,14 +92,16 @@ export function ThreadView({ tag, onSelectEmail, selectedEmailId }: Props) {
         {emails.map((e) => (
           <li
             key={e.id}
-            className={`email-item ${selectedEmailId === e.id ? 'selected' : ''}`}
+            className={`email-item ${selectedEmailId === e.id ? 'selected' : ''} ${!e.isRead ? 'unread' : ''}`}
             onClick={() => onSelectEmail(e.id)}
           >
             <div className="email-from">{e.fromEmail}</div>
             <div className="email-subject">{e.subject || '(no subject)'}</div>
             <div className="email-meta">
               <span className="email-date">{formatDate(e.receivedAt)}</span>
-              {e.hasAttachments && <span className="attachment-badge">📎 {e.attachmentCount}</span>}
+              {!e.isRead && <span className="unread-dot">●</span>}
+              {e.isRead && <CheckCircle size={14} className="read-icon" style={{ opacity: 0.5, marginLeft: '4px' }} />}
+              {e.hasAttachments && <span className="attachment-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}><Paperclip size={12} /> {e.attachmentCount}</span>}
             </div>
           </li>
         ))}

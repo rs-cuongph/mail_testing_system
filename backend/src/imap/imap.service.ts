@@ -52,7 +52,7 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
   }
 
   private buildClient(): ImapFlow {
-    return new ImapFlow({
+    const client = new ImapFlow({
       host: this.config.get('IMAP_HOST', 'localhost'),
       port: parseInt(this.config.get('IMAP_PORT', '993')),
       secure: this.config.get('IMAP_TLS', 'true') === 'true',
@@ -62,6 +62,18 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
       },
       logger: false,
     });
+
+    client.on('error', (err) => {
+      this.logger.error(`ImapFlow unexpected error: ${err.message}`);
+    });
+
+    client.on('close', () => {
+      this.logger.warn(`ImapFlow connection closed.`);
+      this.isRunning = false;
+      this.scheduleReconnect();
+    });
+
+    return client;
   }
 
   private async connect() {
@@ -146,13 +158,38 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
 
   private async fetchUnseen() {
     if (!this.client) return;
-    for await (const msg of this.client.fetch(
-      '1:*',
-      { envelope: true, source: true },
-      { uid: true },
-    )) {
-      if (!msg.source) continue;
-      await this.processRawEmail(msg.source);
+
+    try {
+      // Find UIDs of all UNSEEN messages
+      const uids = await this.client.search({ seen: false }, { uid: true });
+      if (!uids || uids.length === 0) {
+        return;
+      }
+
+      this.logger.log(`Found ${uids.length} unseen messages. Fetching...`);
+
+      const processedUids: number[] = [];
+
+      for await (const msg of this.client.fetch(
+        uids,
+        { envelope: true, source: true },
+        { uid: true },
+      )) {
+        if (!msg.source) continue;
+        await this.processRawEmail(msg.source);
+        processedUids.push(msg.uid);
+      }
+
+      // Mark the processed messages as SEEN outside the fetch loop to prevent IMAP lock deadlocks
+      if (processedUids.length > 0) {
+        try {
+          await this.client.messageFlagsAdd(processedUids, ['\\Seen'], { uid: true });
+        } catch (flagErr) {
+          this.logger.warn(`Failed to mark msgs as seen: ${flagErr.message}`);
+        }
+      }
+    } catch (err) {
+      this.logger.error(`Error in fetchUnseen: ${err.message}`);
     }
   }
 

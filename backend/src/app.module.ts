@@ -7,6 +7,7 @@ import { AttachmentsModule } from './attachments/attachments.module';
 import { ImapModule } from './imap/imap.module';
 import { EventsModule } from './events/events.module';
 import { ConfigController } from './config/config.controller';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ConfigController } from './config/config.controller';
     ThreadsModule,
     EmailsModule,
     AttachmentsModule,
+    CategoriesModule,
   ],
   controllers: [ConfigController],
 })
