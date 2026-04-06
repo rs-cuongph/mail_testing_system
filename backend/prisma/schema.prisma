@@ -11,16 +11,20 @@ datasource db {
 
 model Thread {
   id          String   @id @default(uuid())
-  tag         String   @unique
+  tag         String
   baseAddress String
   fullAddress String
   categoryId  String?
+  profileId   String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   emails      Email[]
-  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  profile     ImapProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
+  @@unique([profileId, tag])
+  @@index([profileId])
   @@index([categoryId])
 }
 
@@ -58,23 +62,38 @@ model Attachment {
 
 model Category {
   id        String   @id @default(uuid())
-  name      String   @unique
+  name      String
   color     String   @default("#60A5FA")
+  profileId String
   createdAt DateTime @default(now())
 
   threads   Thread[]
+  profile   ImapProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, name])
+  @@index([profileId])
 }
 
-model SystemConfig {
-  id               Int      @id @default(1)
+model ImapProfile {
+  id               String   @id @default(uuid())
+  name             String   @unique
+  provider         String   @default("custom")
   imapHost         String
-  imapPort         Int
+  imapPort         Int      @default(993)
   imapUser         String
   imapPassword     String
-  imapTls          Boolean
-  imapMode         String
-  imapPollInterval Int
+  imapTls          Boolean  @default(true)
+  imapMode         String   @default("idle")
+  imapPollInterval Int      @default(5000)
   mailDomain       String
-  mailBaseAddress  String
+  mailBaseAddress  String   @default("inbox")
+  isActive         Boolean  @default(false)
+  lastUsedAt       DateTime?
+  createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+
+  threads    Thread[]
+  categories Category[]
 }
+
+

@@ -10,6 +10,7 @@ import { EventsModule } from './events/events.module';
 import { ConfigController } from './config/config.controller';
 import { CategoriesModule } from './categories/categories.module';
 import { SettingsModule } from './settings/settings.module';
+import { ProfilesModule } from './profiles/profiles.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SettingsModule } from './settings/settings.module';
     AttachmentsModule,
     CategoriesModule,
     SettingsModule,
+    ProfilesModule,
   ],
   controllers: [ConfigController],
 })

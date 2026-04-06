@@ -1,47 +1,49 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ProfilesService } from '../profiles/profiles.service';
 import { UpdateSettingsDto } from './dto/settings.dto';
 import { encrypt, decrypt } from '../utils/crypto.util';
 
 @Injectable()
 export class SettingsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly profilesService: ProfilesService,
+  ) {}
 
   async getSettings() {
-    const config = await this.prisma.systemConfig.findUnique({ where: { id: 1 } });
-    if (!config) {
+    const defaultProfile = await this.profilesService.findActive();
+    if (!defaultProfile) {
       throw new NotFoundException('Configuration not found');
     }
 
     return {
-      imapHost: config.imapHost,
-      imapPort: config.imapPort,
-      imapUser: config.imapUser,
-      imapPassword: '••••••••', // Masked password for UI
-      imapTls: config.imapTls,
-      imapMode: config.imapMode,
-      imapPollInterval: config.imapPollInterval,
-      mailDomain: config.mailDomain,
-      mailBaseAddress: config.mailBaseAddress,
+      imapHost: defaultProfile.imapHost,
+      imapPort: defaultProfile.imapPort,
+      imapUser: defaultProfile.imapUser,
+      imapPassword: '••••••••',
+      imapTls: defaultProfile.imapTls,
+      imapMode: defaultProfile.imapMode,
+      imapPollInterval: defaultProfile.imapPollInterval,
+      mailDomain: defaultProfile.mailDomain,
+      mailBaseAddress: defaultProfile.mailBaseAddress,
     };
   }
 
   async getRawPassword() {
-    const config = await this.prisma.systemConfig.findUnique({ where: { id: 1 } });
-    if (!config) {
+    const raw = await this.prisma.imapProfile.findFirst({ where: { isActive: true } });
+    if (!raw) {
       throw new NotFoundException('Configuration not found');
     }
-    return decrypt(config.imapPassword);
+    return decrypt(raw.imapPassword);
   }
 
   async updateSettings(dto: UpdateSettingsDto) {
-    let newPasswordEncrypted: string | undefined = undefined;
+    let raw = await this.prisma.imapProfile.findFirst({ where: { isActive: true } });
 
-    if (dto.imapPassword && dto.imapPassword !== '••••••••') {
-      newPasswordEncrypted = encrypt(dto.imapPassword);
-    }
-
-    const dataToSave: any = {
+    const payload = {
+      name: raw ? raw.name : 'Default System Profile',
+      provider: raw ? raw.provider : 'custom',
       imapHost: dto.imapHost,
       imapPort: dto.imapPort,
       imapUser: dto.imapUser,
@@ -50,22 +52,20 @@ export class SettingsService {
       imapPollInterval: dto.imapPollInterval,
       mailDomain: dto.mailDomain,
       mailBaseAddress: dto.mailBaseAddress,
+      // If there's a new password passed, we encrypt it. Oh wait, profilesService handles encryption
     };
 
-    if (newPasswordEncrypted) {
-      dataToSave.imapPassword = newPasswordEncrypted;
+    if (dto.imapPassword && dto.imapPassword !== '••••••••') {
+      (payload as any).imapPassword = dto.imapPassword;
     }
 
-    const saved = await this.prisma.systemConfig.upsert({
-      where: { id: 1 },
-      update: dataToSave,
-      create: {
-        ...dataToSave,
-        imapPassword: Object.hasOwn(dataToSave, 'imapPassword') 
-            ? dataToSave.imapPassword 
-            : encrypt(''), // Fallback if no password provided on initial create
-      },
-    });
+    let saved;
+    if (raw) {
+      saved = await this.profilesService.update(raw.id, payload);
+    } else {
+      saved = await this.profilesService.create(payload as any);
+      await this.profilesService.activate(saved.id);
+    }
 
     return saved;
   }

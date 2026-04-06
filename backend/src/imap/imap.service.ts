@@ -77,9 +77,11 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     await this.disconnect();
   }
 
-  @OnEvent('config.updated')
-  async handleConfigUpdated() {
-    this.logger.log('🔄 Configuration updated -> Restarting IMAP connection');
+  private currentProfileId: string | null = null;
+
+  @OnEvent('profile.switched')
+  async handleProfileSwitched() {
+    this.logger.log('🔄 Profile switched -> Restarting IMAP connection');
     this.isRunning = false;
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     await this.disconnect();
@@ -88,46 +90,37 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
 
   private async loadConfig() {
     try {
-      const dbConfig = await this.prisma.systemConfig.findUnique({ where: { id: 1 } });
-      if (dbConfig) {
+      const activeProfile = await this.prisma.imapProfile.findFirst({ where: { isActive: true } });
+      if (activeProfile) {
         this.imapOptions = {
-          host: dbConfig.imapHost,
-          port: dbConfig.imapPort,
-          secure: dbConfig.imapTls,
+          host: activeProfile.imapHost,
+          port: activeProfile.imapPort,
+          secure: activeProfile.imapTls,
           auth: {
-            user: dbConfig.imapUser,
-            pass: decrypt(dbConfig.imapPassword),
+            user: activeProfile.imapUser,
+            pass: decrypt(activeProfile.imapPassword),
           },
           logger: false,
         };
-        this.configuredDomain = dbConfig.mailDomain;
-        this.configuredBaseAddress = dbConfig.mailBaseAddress;
-        this.currentMode = dbConfig.imapMode;
-        this.currentPollInterval = dbConfig.imapPollInterval;
+        this.configuredDomain = activeProfile.mailDomain;
+        this.configuredBaseAddress = activeProfile.mailBaseAddress;
+        this.currentMode = activeProfile.imapMode;
+        this.currentPollInterval = activeProfile.imapPollInterval;
+        this.currentProfileId = activeProfile.id;
         return;
       }
-    } catch (err) {
-      this.logger.warn(`Failed to read from DB: ${err.message}, falling back to process.env`);
+    } catch (err: any) {
+      this.logger.warn(`Failed to read active profile from DB: ${err.message}`);
     }
 
-    // Fallback exactly as before setup
-    this.imapOptions = {
-      host: this.config.get('IMAP_HOST', 'localhost'),
-      port: parseInt(this.config.get('IMAP_PORT', '993')),
-      secure: this.config.get('IMAP_TLS', 'true') === 'true',
-      auth: {
-        user: this.config.get('IMAP_USER', ''),
-        pass: this.config.get('IMAP_PASSWORD', ''),
-      },
-      logger: false,
-    };
-    this.currentMode = this.config.get('IMAP_MODE', 'idle');
-    this.currentPollInterval = parseInt(this.config.get('IMAP_POLL_INTERVAL', '5000'));
+    // Default or pause if no profiles are found but we have no fallback now that we use profiles
+    this.imapOptions = null;
+    this.currentProfileId = null;
   }
 
   private buildClient(): ImapFlow {
     if (!this.imapOptions) {
-      throw new Error('IMAP Config not loaded yet');
+      throw new Error('IMAP Config not loaded or no active profile');
     }
     const client = new ImapFlow(this.imapOptions);
 
@@ -293,6 +286,7 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
         tag,
         baseAddress: extracted.baseAddress,
         fullAddress: threadFullAddress,
+        profileId: this.currentProfileId ?? undefined,
       });
 
       // Create email record

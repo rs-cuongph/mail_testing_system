@@ -5,11 +5,12 @@ import { ThreadView } from './components/ThreadView';
 import { EmailDetail } from './components/EmailDetail';
 import { SearchResults } from './components/SearchResults';
 import { type AppConfig } from './services/api';
-import { settingsApi } from './services/settings.api';
 import { Inbox, Mailbox, Settings } from 'lucide-react';
 import { SetupPage } from './pages/SetupPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ProfilesPage } from './pages/ProfilesPage';
 import { IMAPStatus } from './components/IMAPStatus';
+import { ProfileProvider } from './contexts/ProfileContext';
 import './index.css';
 
 function MainApp() {
@@ -21,18 +22,31 @@ function MainApp() {
 
   useEffect(() => {
     // Both config load and setup check
-    settingsApi.getSettings()
-      .then((settings) => {
-        // AppConfig expects mailDomain and mailBaseAddress
-        setConfig({ mailDomain: settings.mailDomain, mailBaseAddress: settings.mailBaseAddress });
-      })
-      .catch((err) => {
-        if (err.message === 'Request failed' || err.message?.includes('404')) {
-          navigate('/setup');
-        } else {
-          setConfig({ mailDomain: 'rn.work', mailBaseAddress: 'gens' });
-        }
+    import('./services/profiles.api').then(({ profilesApi }) => {
+      profilesApi.getActiveProfile()
+        .then((settings) => {
+          setConfig({ mailDomain: settings.mailDomain, mailBaseAddress: settings.mailBaseAddress });
+        })
+        .catch((err) => {
+          if (err.message === 'Request failed' || err.message?.includes('404')) {
+            navigate('/setup');
+          } else {
+            setConfig({ mailDomain: 'runsystem.work', mailBaseAddress: 'gens' });
+          }
+        });
+    });
+
+    const handleProfileSwitched = () => {
+      import('./services/profiles.api').then(({ profilesApi }) => {
+        profilesApi.getActiveProfile()
+          .then((settings) => {
+            setConfig({ mailDomain: settings.mailDomain, mailBaseAddress: settings.mailBaseAddress });
+          })
+          .catch(() => {});
       });
+    };
+    window.addEventListener('profile:switched', handleProfileSwitched);
+    return () => window.removeEventListener('profile:switched', handleProfileSwitched);
   }, [navigate]);
 
   const handleSelectThread = (tag: string) => {
@@ -116,10 +130,13 @@ function MainApp() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MainApp />} />
-      <Route path="/setup" element={<SetupPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
-    </Routes>
+    <ProfileProvider>
+      <Routes>
+        <Route path="/" element={<MainApp />} />
+        <Route path="/profiles" element={<ProfilesPage />} />
+        <Route path="/setup" element={<SetupPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Routes>
+    </ProfileProvider>
   );
 }

@@ -6,6 +6,7 @@ import { SearchBar } from './SearchBar';
 import { FilterTabs } from './FilterTabs';
 import { CategoryManager } from './CategoryManager';
 import { CategoryBadge } from './CategoryBadge';
+import { ProfileSwitcher } from './ProfileSwitcher';
 import { Trash2, X, CheckSquare, Layers, Tag, Settings } from 'lucide-react';
 
 interface Props {
@@ -94,6 +95,10 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       setThreads((prev) => prev.map((t) => ({ ...t, unreadCount: 0 })));
     });
 
+    socket.on('profile:switched', () => {
+      loadData();
+    });
+
     return () => {
       socket.off('thread:new');
       socket.off('email:new');
@@ -102,6 +107,7 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       socket.off('all:cleared');
       socket.off('thread:read');
       socket.off('all:read');
+      socket.off('profile:switched');
     };
   }, []);
 
@@ -177,7 +183,8 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           Threads
         </h2>
-        <div style={{ display: 'flex', gap: '4px' }}>
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <ProfileSwitcher />
           <button className={`btn-icon ${groupedView ? 'active' : ''}`} onClick={() => setGroupedView(!groupedView)} title="Group by category">
             <Layers size={16} />
           </button>
