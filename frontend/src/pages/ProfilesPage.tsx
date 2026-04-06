@@ -171,11 +171,13 @@ export function ProfilesPage() {
     setError(null);
 
     try {
+      let savedProfile;
       if (selectedProfile) {
-        await profilesApi.updateProfile(selectedProfile.id, formData);
+        savedProfile = await profilesApi.updateProfile(selectedProfile.id, formData);
       } else {
-        await profilesApi.createProfile(formData as ImapProfile);
+        savedProfile = await profilesApi.createProfile(formData as ImapProfile);
       }
+      setSelectedProfile(savedProfile);
       setIsEditing(false);
       await fetchProfiles();
     } catch (err: any) {

@@ -44,6 +44,8 @@ export function encrypt(text: string): string {
  * @returns The decrypted plaintext string.
  */
 export function decrypt(encryptedText: string): string {
+  if (!encryptedText) return '';
+  
   const key = getEncryptionKey();
   
   const parts = encryptedText.split(':');

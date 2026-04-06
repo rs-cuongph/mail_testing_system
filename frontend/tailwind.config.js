@@ -20,6 +20,14 @@ export default {
         body: ['"VT323"', 'monospace'],
         sans: ['"VT323"', 'monospace'],
       },
+      fontSize: {
+        'xs': ['14px', { lineHeight: '20px' }],
+        'sm': ['18px', { lineHeight: '24px' }],
+        'base': ['20px', { lineHeight: '28px' }],
+        'lg': ['24px', { lineHeight: '32px' }],
+        'xl': ['28px', { lineHeight: '36px' }],
+        '2xl': ['32px', { lineHeight: '40px' }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

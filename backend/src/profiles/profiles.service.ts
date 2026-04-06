@@ -96,7 +96,14 @@ export class ProfilesService {
 
     const passToTest = dto.imapPassword && dto.imapPassword !== '••••••••' ? dto.imapPassword : decrypt(existing.imapPassword);
 
-    if (dto.imapHost || dto.imapPort || dto.imapUser || dto.imapTls !== undefined || dto.imapPassword) {
+    const isConnectionSettingChanged = 
+      (dto.imapHost && dto.imapHost !== existing.imapHost) ||
+      (dto.imapPort !== undefined && dto.imapPort !== existing.imapPort) ||
+      (dto.imapUser && dto.imapUser !== existing.imapUser) ||
+      (dto.imapTls !== undefined && dto.imapTls !== existing.imapTls) ||
+      (dto.imapPassword && dto.imapPassword !== '••••••••');
+
+    if (isConnectionSettingChanged && passToTest) {
       // Test connection
       try {
         await this.imapService.testConnection({
@@ -113,12 +120,10 @@ export class ProfilesService {
     }
 
     const dataToSave: any = { ...dto };
-    if (dto.imapPassword) {
-      if (dto.imapPassword === '••••••••') {
-        delete dataToSave.imapPassword;
-      } else {
-        dataToSave.imapPassword = encrypt(dto.imapPassword);
-      }
+    if (!dto.imapPassword || dto.imapPassword === '••••••••') {
+      delete dataToSave.imapPassword;
+    } else {
+      dataToSave.imapPassword = encrypt(dto.imapPassword);
     }
 
     const updated = await this.prisma.imapProfile.update({

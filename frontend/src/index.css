@@ -58,7 +58,7 @@ body,
   font-family: 'VT323', monospace;
   background: var(--bg-base);
   color: var(--text-primary);
-  font-size: 18px;
+  font-size: 24px;
   line-height: 1.4;
   -webkit-font-smoothing: none;
 }
@@ -91,7 +91,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .app-logo {
-  font-size: 14px;
+  font-size: 18px;
   font-family: 'Press Start 2P', cursive;
   font-weight: normal;
   color: var(--app-accent);
@@ -100,7 +100,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .app-subtitle {
-  font-size: 13px;
+  font-size: 18px;
   color: var(--text-muted);
   font-weight: 500;
   background: rgba(255, 255, 255, 0.05);
@@ -135,7 +135,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .thread-list-header h2 {
-  font-size: 10px;
+  font-size: 14px;
   font-family: 'Press Start 2P', cursive;
   font-weight: normal;
   color: var(--text-primary);
@@ -200,7 +200,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   position: absolute;
   left: 6px;
   top: 14px;
-  font-size: 10px;
+  font-size: 14px;
   color: #000;
   opacity: 0;
   transition: all var(--transition-normal);
@@ -211,7 +211,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .thread-address {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
   word-break: break-all;
@@ -228,7 +228,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .thread-count {
-  font-size: 14px;
+  font-size: 18px;
   background: var(--bg-base);
   color: var(--text-primary);
   border: 2px solid #000;
@@ -240,7 +240,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   position: absolute;
   top: -6px;
   left: -6px;
-  font-size: 12px;
+  font-size: 16px;
   background: var(--danger);
   color: white;
   border: 2px solid #000;
@@ -256,7 +256,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .thread-subject {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -274,7 +274,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 14px;
   box-shadow: 2px 2px 0px #000;
 }
 
@@ -290,9 +290,9 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   background: var(--bg-surface);
   border: 2px solid #000;
   color: var(--danger);
-  padding: 0 12px;
-  height: 30px;
-  font-size: 14px;
+  padding: 0 16px;
+  height: 34px;
+  font-size: 20px;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
@@ -319,9 +319,9 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   background: var(--bg-surface);
   border: 2px solid #000;
   color: var(--text-primary);
-  padding: 0 12px;
-  height: 30px;
-  font-size: 14px;
+  padding: 0 16px;
+  height: 34px;
+  font-size: 20px;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
@@ -375,7 +375,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   border: 2px solid #000;
   color: var(--text-primary);
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
@@ -422,7 +422,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .empty-state p {
-  font-size: 16px;
+  font-size: 20px;
   max-width: 400px;
   text-align: center;
   line-height: 1.6;
@@ -434,7 +434,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   padding: 4px 8px;
   color: #000;
   font-family: 'Press Start 2P', cursive;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: normal;
   box-shadow: 2px 2px 0px #000;
 }
@@ -443,7 +443,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 .state-msg {
   padding: 24px;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 18px;
   text-align: center;
 }
 
@@ -476,14 +476,14 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .thread-view-header h3 {
-  font-size: 16px;
+  font-size: 20px;
   font-family: 'Press Start 2P', cursive;
   font-weight: normal;
   color: var(--text-primary);
 }
 
 .email-count {
-  font-size: 14px;
+  font-size: 18px;
   background: var(--bg-elevated);
   padding: 4px 12px;
   color: var(--text-primary);
@@ -541,7 +541,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .email-from {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--text-primary);
   font-weight: normal;
   margin-bottom: 8px;
@@ -552,7 +552,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .email-subject {
-  font-size: 16px;
+  font-size: 20px;
   color: var(--text-primary);
   font-weight: 600;
   margin-bottom: 12px;
@@ -566,14 +566,14 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .email-date {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-muted);
   font-weight: 500;
 }
 
 .unread-dot {
   color: var(--accent);
-  font-size: 10px;
+  font-size: 14px;
   display: inline-flex;
 }
 
@@ -582,7 +582,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .attachment-badge {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -625,7 +625,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .email-metadata dt {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -634,14 +634,14 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .email-metadata dd {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--text-primary);
   font-weight: 500;
 }
 
 .email-metadata dd.monospace {
   font-family: 'VT323', monospace;
-  font-size: 16px;
+  font-size: 20px;
   color: var(--text-primary);
   word-break: break-all;
   background: var(--bg-elevated);
@@ -670,7 +670,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -702,7 +702,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 .body-text {
   padding: 32px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.7;
   color: var(--text-primary);
   white-space: pre-wrap;
@@ -730,7 +730,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .attachment-list h4 {
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -787,7 +787,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .attachment-name {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--accent-light);
   flex: 1;
@@ -797,7 +797,7 @@ h1, h2, h3, h4, h5, h6, .heading-font {
 }
 
 .attachment-size {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-muted);
   font-weight: 500;
 }

@@ -48,7 +48,7 @@ export function ProfileSwitcher() {
 
   if (loading && profiles.length === 0) {
     return (
-      <div className="flex items-center w-[200px] h-9 border-2 border-black px-3 bg-slate-900 shadow-[2px_2px_0_#000] text-slate-400">
+      <div className="flex items-center w-[200px] h-[34px] border-2 border-black px-3 bg-slate-900 shadow-[2px_2px_0_#000] text-slate-400">
         <Loader2 className="w-4 h-4 animate-spin mr-2" />
         <span className="text-xs">Loading...</span>
       </div>
@@ -60,7 +60,7 @@ export function ProfileSwitcher() {
   }
 
   return (
-    <div className="relative overflow-hidden w-[150px] flex items-center">
+    <div className="relative overflow-hidden w-[200px] flex items-center">
       <Select name="profile-switcher-input" value={activeProfileId || ''} onValueChange={handleSwitch} disabled={loading}>
         <SelectTrigger className="w-full bg-slate-900 border-2 border-black rounded-none shadow-[2px_2px_0_#000] text-sm focus:ring-0">
           <SelectValue placeholder="Select Profile">
