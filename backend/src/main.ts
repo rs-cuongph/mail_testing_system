@@ -7,7 +7,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost,http://localhost:5173')
     .split(',')
     .map(o => o.trim());
   app.enableCors({

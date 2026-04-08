@@ -175,26 +175,44 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
+  private idleLock: any = null;
+
   private async listenWithIdle() {
     if (!this.client) return;
+    const onExists = async (data: any) => {
+      this.logger.log(`Inbox changed (exists event). Total: ${data.count}`);
+      await this.fetchUnseen();
+    };
+
     try {
-      const lock = await this.client.getMailboxLock('INBOX');
-      try {
-        await this.fetchUnseen();
-        this.logger.log('👂 Listening via IMAP IDLE...');
-        // imapflow idle() is a Promise<boolean>; re-call it to stay in IDLE
-        while (this.isRunning) {
-          const hasChanges = await this.client.idle();
-          if (hasChanges) {
-            await this.fetchUnseen();
+      this.idleLock = await this.client.getMailboxLock('INBOX');
+      
+      this.client.on('exists', onExists);
+      
+      await this.fetchUnseen();
+      this.logger.log('👂 Listening via IMAP IDLE (event-based)...');
+      
+      // Keep the loop alive as long as we are running
+      await new Promise<void>((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!this.isRunning || !this.client) {
+            clearInterval(checkInterval);
+            resolve();
           }
-        }
-      } finally {
-        lock.release();
-      }
+        }, 1000);
+      });
+
     } catch (err) {
       this.logger.error(`IDLE error: ${err.message}`);
       this.scheduleReconnect();
+    } finally {
+      if (this.client) {
+        this.client.removeListener('exists', onExists);
+      }
+      if (this.idleLock) {
+        this.idleLock.release();
+        this.idleLock = null;
+      }
     }
   }
 
