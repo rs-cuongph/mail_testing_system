@@ -139,6 +139,9 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
       this.logger.log('✅ IMAP connected');
       this.setStatus('connected');
 
+      // Initial sync of recent history
+      await this.syncRecentHistory();
+
       // The mode should be loaded from DB if available, else from ENV
       if (this.currentMode === 'idle') {
         await this.listenWithIdle();
@@ -252,10 +255,42 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  private async syncRecentHistory() {
+    if (!this.client) return;
+
+    try {
+      this.logger.log(`🔄 Syncing historical recent messages...`);
+      const lock = await this.client.getMailboxLock('INBOX');
+      try {
+        const total = this.client.mailbox && typeof this.client.mailbox !== 'boolean' ? this.client.mailbox.exists : 0;
+        this.logger.log(`Historical sync: Mailbox has ${total} total messages.`);
+        if (total === 0) return;
+        
+        // Fetch up to the last 30 emails to populate history
+        const start = Math.max(1, total - 29);
+        const seqRange = `${start}:*`;
+        this.logger.log(`Historical sync: Fetching seqRange ${seqRange}`);
+        
+        for await (const msg of this.client.fetch(seqRange, { envelope: true, source: true }, { uid: false })) {
+          if (!msg.source) continue;
+          await this.processRawEmail(msg.source);
+        }
+        this.logger.log(`✅ Completed historical sync.`);
+      } finally {
+        lock.release();
+      }
+    } catch (err) {
+      this.logger.error(`Error syncing historical messages: ${err.message}`);
+    }
+  }
+
   private async processRawEmail(source: Buffer) {
     try {
-      const extracted = await this.mailParser.parse(source);
-      if (!extracted) return;
+      const extracted = await this.mailParser.parse(source, this.configuredDomain);
+      if (!extracted) {
+        this.logger.debug('Skipped email: Domain mismatch or invalid address.');
+        return;
+      }
 
       // Deduplication — skip if messageId already exists
       const existing = await this.emailsService.findByMessageId(

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Server, Check, Trash2, Edit2, Loader2, Save, AlertCircle, Download, Upload, FileJson } from 'lucide-react';
+import { ArrowLeft, Plus, Server, Check, Trash2, Edit2, Loader2, Save, AlertCircle, Download, Upload, FileJson, Shield, Globe, Mail } from 'lucide-react';
 import { profilesApi, type ImapProfile } from '../services/profiles.api';
 import { useProfile } from '../contexts/ProfileContext';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,6 @@ export function ProfilesPage() {
   const [selectedProfile, setSelectedProfile] = useState<ImapProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   
-  // Form State
   const [formData, setFormData] = useState<Partial<ImapProfile>>({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +74,6 @@ export function ProfilesPage() {
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
     try {
       setLoading(true);
       const text = await file.text();
@@ -122,7 +120,7 @@ export function ProfilesPage() {
 
   const handleEdit = (p: ImapProfile) => {
     setSelectedProfile(p);
-    setFormData({ ...p, imapPassword: '' }); // clear password for editing
+    setFormData({ ...p, imapPassword: '' });
     setIsEditing(true);
     setError(null);
   };
@@ -169,7 +167,6 @@ export function ProfilesPage() {
     e.preventDefault();
     setSaving(true);
     setError(null);
-
     try {
       let savedProfile;
       if (selectedProfile) {
@@ -188,126 +185,223 @@ export function ProfilesPage() {
   };
 
   return (
-    <div className="setup-container flex items-center justify-center p-4">
-      <div className="bg-slate-900 border-4 border-black shadow-[8px_8px_0_#000] flex w-full max-w-5xl h-[80vh] overflow-hidden text-slate-200">
-        
-        {/* Left Sidebar: Profile List */}
-        <div className="w-1/3 border-r border-slate-800 flex flex-col bg-slate-950">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-            <button onClick={() => navigate('/')} className="text-slate-400 hover:text-slate-200 flex items-center gap-2 text-sm transition-colors">
+    <div className="setup-container flex items-center justify-center p-6">
+      <div className="bg-white border border-slate-200 shadow-lg rounded-2xl flex w-full max-w-6xl h-[82vh] overflow-hidden">
+
+        {/* ── Left Sidebar ── */}
+        <div className="w-[340px] flex-shrink-0 border-r border-slate-100 flex flex-col bg-slate-50">
+          {/* Sidebar header */}
+          <div className="px-4 py-4 border-b border-slate-100 flex items-center justify-between">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors font-medium"
+            >
               <ArrowLeft size={16} /> Back
             </button>
-            <Button size="sm" onClick={handleAddNew} className="bg-green-500 hover:bg-green-400 text-black border-2 border-black shadow-[2px_2px_0_#000] rounded-none hover:translate-x-[-1px] hover:translate-y-[-1px] font-bold gap-2">
-              <Plus size={14} /> New Profile
-            </Button>
+            <button
+              onClick={handleAddNew}
+              className="flex items-center justify-center gap-1.5 h-9 px-4 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
+            >
+              <Plus size={16} /> New Profile
+            </button>
           </div>
-          
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+
+          {/* Profile list */}
+          <div className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
             {loading ? (
-              <div className="text-center p-4 text-slate-500 text-sm">Loading...</div>
+              <div className="flex items-center justify-center gap-2 py-8 text-slate-400 text-sm">
+                <Loader2 size={14} className="animate-spin" /> Loading...
+              </div>
             ) : profiles.length === 0 ? (
-              <div className="text-center p-4 text-slate-500 text-sm">No profiles found</div>
+              <div className="text-center py-8 text-slate-400 text-sm">No profiles yet</div>
             ) : (
-              profiles.map(p => (
-                <div 
-                  key={p.id}
-                  onClick={() => handleSelect(p)}
-                  className={`p-3 border-2 cursor-pointer transition-all ${selectedProfile?.id === p.id && !isEditing ? 'border-black bg-green-500 text-black shadow-[4px_4px_0_#000] translate-x-[-2px] translate-y-[-2px]' : 'border-transparent hover:border-black hover:bg-slate-800'}`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`font-medium heading-font text-[10px] ${selectedProfile?.id === p.id && !isEditing ? 'text-black' : 'text-slate-200'}`}>{p.name}</span>
-                    {p.isActive && <span className="bg-black text-green-400 text-[10px] px-2 py-0.5 border border-green-400 font-medium tracking-wide">ACTIVE</span>}
-                  </div>
-                  <div className={`text-xs flex items-center gap-1.5 ${selectedProfile?.id === p.id && !isEditing ? 'text-slate-800' : 'text-slate-400'}`}><Server size={12} /> {p.imapUser}</div>
-                </div>
-              ))
+              profiles.map(p => {
+                const isSelected = selectedProfile?.id === p.id && !isEditing;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSelect(p)}
+                    className={`w-full text-left px-3 py-2.5 rounded-xl transition-all ${
+                      isSelected
+                        ? 'bg-blue-50 border border-blue-200'
+                        : 'hover:bg-white border border-transparent hover:border-slate-200 hover:shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={`text-[15px] font-semibold ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
+                        {p.name}
+                      </span>
+                      {p.isActive && (
+                        <span className="flex items-center gap-1 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                          Active
+                        </span>
+                      )}
+                    </div>
+                    <div className={`text-sm flex items-center gap-1.5 truncate ${isSelected ? 'text-blue-500' : 'text-slate-400'}`}>
+                      <Mail size={13} /> {p.imapUser}
+                    </div>
+                  </button>
+                );
+              })
             )}
           </div>
-          
-          <div className="p-4 border-t border-slate-800 flex items-center justify-between gap-2">
+
+          {/* Sidebar footer: Import/Template/Export */}
+          <div className="p-3 border-t border-slate-100 flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" />
-            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 border-2 border-black rounded-none shadow-[2px_2px_0_#000] bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 flex items-center justify-center gap-1.5 h-9 px-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors shadow-sm"
+            >
               <Upload size={14} /> Import
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleExportTemplate} className="flex-1 border-2 border-black rounded-none shadow-[2px_2px_0_#000] bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2">
+            </button>
+            <button
+              onClick={handleExportTemplate}
+              className="flex-1 flex items-center justify-center gap-1.5 h-9 px-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors shadow-sm"
+            >
               <FileJson size={14} /> Template
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleExport} className="flex-1 border-2 border-black rounded-none shadow-[2px_2px_0_#000] bg-slate-800 hover:bg-slate-700 text-slate-300 gap-2" disabled={profiles.length === 0}>
+            </button>
+            <button
+              onClick={handleExport}
+              disabled={profiles.length === 0}
+              className="flex-1 flex items-center justify-center gap-1.5 h-9 px-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            >
               <Download size={14} /> Export
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Right Content */}
-        <div className="w-2/3 flex flex-col bg-slate-900 overflow-y-auto">
+        {/* ── Right Content ── */}
+        <div className="flex-1 flex flex-col bg-white overflow-y-auto">
+          {/* Error banner */}
           {error && (
-            <div className="m-6 mb-0 p-3 bg-red-500 border-2 border-black shadow-[4px_4px_0_#000] text-black font-bold flex items-center gap-2 text-sm">
-              <AlertCircle size={16} /> {error}
+            <div className="mx-6 mt-6 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center gap-2 text-sm">
+              <AlertCircle size={15} className="flex-shrink-0" /> {error}
             </div>
           )}
 
+          {/* ── View Mode ── */}
           {!isEditing && selectedProfile ? (
-            <div className="p-8">
-              <div className="flex items-start justify-between mb-8">
-                <div>
-                  <h2 className="text-xl font-semibold mb-2 heading-font">{selectedProfile.name}</h2>
-                  <p className="text-slate-400 text-sm flex items-center gap-2"><Server size={14}/> {selectedProfile.imapUser} @ {selectedProfile.imapHost}:{selectedProfile.imapPort}</p>
+            <div className="p-8 flex flex-col gap-6">
+              {/* Header */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                      <Server size={24} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-xl font-bold text-slate-900">{selectedProfile.name}</h2>
+                        {selectedProfile.isActive && (
+                          <span className="flex items-center gap-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                            Active
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[15px] text-slate-500 mt-1">{selectedProfile.imapUser} · {selectedProfile.imapHost}:{selectedProfile.imapPort}</p>
+                  </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(selectedProfile)} className="border-2 border-black shadow-[2px_2px_0_#000] rounded-none bg-slate-800 hover:bg-slate-700 gap-2">
-                    <Edit2 size={14} /> Edit
+                  <Button
+                    variant="outline"
+                    onClick={() => handleEdit(selectedProfile)}
+                    className="flex items-center justify-center w-10 h-10 text-slate-600 border-slate-200 bg-white hover:bg-slate-50 hover:text-slate-900 rounded-lg shadow-sm"
+                    title="Edit Profile"
+                  >
+                    <Edit2 size={18} />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleDelete(selectedProfile.id)} className="border-2 border-black shadow-[2px_2px_0_#000] rounded-none bg-red-500 text-black hover:bg-red-400 hover:text-black gap-2">
-                    <Trash2 size={14} /> Delete
+                  <Button
+                    variant="outline"
+                    onClick={() => handleDelete(selectedProfile.id)}
+                    className="flex items-center justify-center w-10 h-10 text-red-600 border-red-200 bg-white hover:bg-red-50 hover:text-red-700 rounded-lg shadow-sm"
+                    title="Delete Profile"
+                  >
+                    <Trash2 size={18} />
                   </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 bg-slate-900 p-6 border-2 border-black shadow-[6px_6px_0_#000]">
-                <div>
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Connection</span>
-                  <div className="mt-2 space-y-1 text-sm text-slate-300">
-                    <p><span className="text-slate-500 inline-block w-20">Host</span> {selectedProfile.imapHost}</p>
-                    <p><span className="text-slate-500 inline-block w-20">Port</span> {selectedProfile.imapPort}</p>
-                    <p><span className="text-slate-500 inline-block w-20">TLS</span> {selectedProfile.imapTls ? 'Enabled' : 'Disabled'}</p>
-                    <p><span className="text-slate-500 inline-block w-20">Mode</span> {selectedProfile.imapMode === 'idle' ? 'IDLE (Real-time)' : 'Polling'}</p>
+              {/* Info cards */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Connection */}
+                <div className="border border-slate-100 rounded-xl p-5 bg-slate-50">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Shield size={14} className="text-blue-500" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Connection</span>
                   </div>
+                  <dl className="space-y-2.5">
+                    {[
+                      { label: 'Host', value: selectedProfile.imapHost },
+                      { label: 'Port', value: selectedProfile.imapPort },
+                      { label: 'TLS', value: selectedProfile.imapTls ? 'Enabled' : 'Disabled' },
+                      { label: 'Mode', value: selectedProfile.imapMode === 'idle' ? 'IDLE (Real-time)' : 'Polling' },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="flex items-center justify-between">
+                        <dt className="text-sm text-slate-400 font-medium w-16">{label}</dt>
+                        <dd className="text-[15px] text-slate-700 font-medium text-right">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 </div>
-                <div>
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Rules</span>
-                  <div className="mt-2 space-y-1 text-sm text-slate-300">
-                    <p><span className="text-slate-500 inline-block w-24">Domain</span> {selectedProfile.mailDomain}</p>
-                    <p><span className="text-slate-500 inline-block w-24">Base Addr</span> {selectedProfile.mailBaseAddress}</p>
+
+                {/* Mail Rules */}
+                <div className="border border-slate-100 rounded-xl p-5 bg-slate-50">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Globe size={14} className="text-blue-500" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Mail Rules</span>
+                  </div>
+                  <dl className="space-y-2.5">
+                    {[
+                      { label: 'Domain', value: selectedProfile.mailDomain },
+                      { label: 'Base Addr', value: selectedProfile.mailBaseAddress },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="flex items-center justify-between">
+                        <dt className="text-sm text-slate-400 font-medium w-24">{label}</dt>
+                        <dd className="text-[15px] text-slate-700 font-medium text-right">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <div className="mt-4 pt-4 border-t border-slate-200">
+                    <p className="text-sm text-slate-400">Receives mail at</p>
+                    <code className="text-[13px] text-blue-600 bg-blue-50 px-2.5 py-1.5 rounded-lg mt-1.5 block font-mono">
+                      {selectedProfile.mailBaseAddress}+tag@{selectedProfile.mailDomain}
+                    </code>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-8 border-t border-slate-800 flex justify-end">
-                <Button 
-                  onClick={() => handleActivate(selectedProfile.id)}
-                  disabled={selectedProfile.isActive}
-                  className={selectedProfile.isActive ? "bg-slate-800 text-slate-500" : "bg-emerald-600 hover:bg-emerald-500 text-white"}
-                >
-                  {selectedProfile.isActive ? <><Check size={16} className="mr-2"/> Active Profile</> : 'Set as Active Profile'}
-                </Button>
-              </div>
+              {/* Activate */}
+              {!selectedProfile.isActive && (
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => handleActivate(selectedProfile.id)}
+                    className="flex items-center justify-center gap-1.5 h-9 px-4 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
+                  >
+                    <Check size={16} /> Set as Active Profile
+                  </button>
+                </div>
+              )}
             </div>
+
           ) : isEditing ? (
+            /* ── Edit Mode ── */
             <div className="p-8">
-              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                {selectedProfile ? 'Edit Profile' : 'Create New Profile'}
+              <h2 className="text-xl font-bold text-slate-900 mb-6">
+                {selectedProfile ? 'Edit Profile' : 'New Profile'}
               </h2>
-              
-              <form onSubmit={handleSave} className="flex flex-col gap-6">
+
+              <form onSubmit={handleSave} className="flex flex-col gap-5">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5 mt-2">
-                    <Label className="text-xs font-medium text-slate-400">Profile Name</Label>
-                    <Input required name="name" value={formData.name || ''} onChange={handleChangeText} placeholder="e.g. Work Gmail" className="bg-slate-950 border-slate-800" />
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-xs font-medium text-slate-500">Profile Name</Label>
+                    <Input required name="name" value={formData.name || ''} onChange={handleChangeText} placeholder="e.g. Work Gmail" className="h-9 text-sm" />
                   </div>
-                  <div className="flex flex-col gap-1.5 mt-2">
-                    <Label className="text-xs font-medium text-slate-400">Email Provider</Label>
-                    <Select 
-                      value={formData.provider || 'custom'} 
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-xs font-medium text-slate-500">Email Provider</Label>
+                    <Select
+                      value={formData.provider || 'custom'}
                       onValueChange={(val) => {
                         const providerVal = val || 'custom';
                         const preset = PROVIDER_PRESETS.find(p => p.id === providerVal);
@@ -322,12 +416,12 @@ export function ProfilesPage() {
                         }));
                       }}
                     >
-                      <SelectTrigger className="bg-slate-950 border-slate-800 text-sm">
+                      <SelectTrigger className="h-9 text-sm">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-900 border-slate-800">
+                      <SelectContent>
                         {PROVIDER_PRESETS.map(p => (
-                          <SelectItem key={p.id} value={p.id} disabled={p.id !== 'custom'} className="text-slate-200">{p.name}</SelectItem>
+                          <SelectItem key={p.id} value={p.id} className={p.id !== 'custom' ? 'hidden' : ''}>{p.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -336,15 +430,15 @@ export function ProfilesPage() {
 
                 {(() => {
                   const preset = PROVIDER_PRESETS.find(p => p.id === formData.provider);
-                  if (preset && preset.helpText) {
+                  if (preset?.helpText) {
                     return (
-                      <div className="p-3 bg-blue-500/10 border border-blue-500/20 text-blue-300 rounded-lg flex items-start gap-2 text-sm">
-                        <AlertCircle size={16} className="mt-0.5" />
+                      <div className="p-3 bg-blue-50 border border-blue-100 text-blue-700 rounded-xl flex items-start gap-2 text-sm">
+                        <AlertCircle size={15} className="mt-0.5 flex-shrink-0" />
                         <div>
                           <p>{preset.helpText}</p>
                           {preset.helpLink && (
-                            <a href={preset.helpLink} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline mt-1 inline-block">
-                              Generate App Password
+                            <a href={preset.helpLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mt-1 inline-block text-xs">
+                              Generate App Password →
                             </a>
                           )}
                         </div>
@@ -356,80 +450,96 @@ export function ProfilesPage() {
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium text-slate-400">IMAP Host</Label>
-                    <Input required name="imapHost" value={formData.imapHost || ''} onChange={handleChangeText} placeholder="imap.gmail.com" className="bg-slate-950 border-slate-800" />
+                    <Label className="text-sm font-medium text-slate-500">IMAP Host</Label>
+                    <Input required name="imapHost" value={formData.imapHost || ''} onChange={handleChangeText} placeholder="imap.gmail.com" className="h-10 text-[15px]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium text-slate-400">Port</Label>
-                    <Input required type="number" name="imapPort" value={formData.imapPort || ''} onChange={handleChangeText} className="bg-slate-950 border-slate-800" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium text-slate-400">Username</Label>
-                    <Input required name="imapUser" value={formData.imapUser || ''} onChange={handleChangeText} className="bg-slate-950 border-slate-800" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium text-slate-400">Password {selectedProfile && '(Leave blank to keep)'}</Label>
-                    <Input required={!selectedProfile} type="password" name="imapPassword" value={formData.imapPassword || ''} onChange={handleChangeText} className="bg-slate-950 border-slate-800" />
+                    <Label className="text-sm font-medium text-slate-500">Port</Label>
+                    <Input required type="number" name="imapPort" value={formData.imapPort || ''} onChange={handleChangeText} className="h-10 text-[15px]" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium text-slate-400">Mail Domain</Label>
-                    <Input required name="mailDomain" value={formData.mailDomain || ''} onChange={handleChangeText} placeholder="example.com" className="bg-slate-950 border-slate-800" />
+                    <Label className="text-sm font-medium text-slate-500">Username</Label>
+                    <Input required name="imapUser" value={formData.imapUser || ''} onChange={handleChangeText} className="h-10 text-[15px]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium text-slate-400">Base Address</Label>
-                    <Input required name="mailBaseAddress" value={formData.mailBaseAddress || ''} onChange={handleChangeText} placeholder="inbox" className="bg-slate-950 border-slate-800" />
+                    <Label className="text-sm font-medium text-slate-500">
+                      Password {selectedProfile && <span className="text-slate-400 font-normal">(leave blank to keep)</span>}
+                    </Label>
+                    <Input required={!selectedProfile} type="password" name="imapPassword" value={formData.imapPassword || ''} onChange={handleChangeText} className="h-10 text-[15px]" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium text-slate-400">Sync Mode</Label>
+                    <Label className="text-sm font-medium text-slate-500">Mail Domain</Label>
+                    <Input required name="mailDomain" value={formData.mailDomain || ''} onChange={handleChangeText} placeholder="example.com" className="h-10 text-[15px]" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-sm font-medium text-slate-500">Base Address</Label>
+                    <Input required name="mailBaseAddress" value={formData.mailBaseAddress || ''} onChange={handleChangeText} placeholder="inbox" className="h-10 text-[15px]" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-sm font-medium text-slate-500">Sync Mode</Label>
                     <Select value={formData.imapMode} onValueChange={(val) => setFormData(prev => ({ ...prev, imapMode: val || 'idle' }))}>
-                      <SelectTrigger className="bg-slate-950 border-slate-800 text-sm">
+                      <SelectTrigger className="h-9 text-sm">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-900 border-slate-800">
-                        <SelectItem value="idle" className="text-slate-200">Real-time (IDLE)</SelectItem>
-                        <SelectItem value="poll" className="text-slate-200">Polling</SelectItem>
+                      <SelectContent>
+                        <SelectItem value="idle">Real-time (IDLE)</SelectItem>
+                        <SelectItem value="poll">Polling</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   {formData.imapMode === 'poll' && (
                     <div className="flex flex-col gap-1.5">
-                      <Label className="text-xs font-medium text-slate-400">Poll Interval (ms)</Label>
-                      <Input required type="number" min="1000" name="imapPollInterval" value={formData.imapPollInterval || 5000} onChange={handleChangeText} className="bg-slate-950 border-slate-800" />
+                      <Label className="text-sm font-medium text-slate-500">Poll Interval (ms)</Label>
+                      <Input required type="number" min="1000" name="imapPollInterval" value={formData.imapPollInterval || 5000} onChange={handleChangeText} className="h-10 text-[15px]" />
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 mt-4">
+                <div className="flex items-center gap-2.5">
                   <Checkbox
                     id="tls"
                     checked={formData.imapTls}
                     onCheckedChange={(c) => setFormData(p => ({ ...p, imapTls: c as boolean }))}
-                    className="border-slate-600 data-[state=checked]:bg-blue-600"
+                    className="border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                   />
-                  <Label htmlFor="tls" className="text-sm font-normal text-slate-300">Enable TLS/SSL</Label>
+                  <Label htmlFor="tls" className="text-[15px] text-slate-600 font-normal cursor-pointer">Enable TLS / SSL</Label>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 mt-4 pt-6 border-t border-slate-800">
-                  <Button type="button" variant="ghost" onClick={() => { setIsEditing(false); setError(null); }} className="text-slate-400 hover:text-slate-200">Cancel</Button>
-                  <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-500 text-white min-w-[120px]">
-                    {saving ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} className="mr-2" /> Save Profile</>}
-                  </Button>
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => { setIsEditing(false); setError(null); }}
+                    className="flex items-center justify-center h-9 px-4 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="flex items-center justify-center gap-1.5 h-9 px-4 min-w-[120px] text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-60 shadow-sm"
+                  >
+                    {saving ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> Save Profile</>}
+                  </button>
                 </div>
               </form>
             </div>
+
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-slate-500">
-              <Server size={48} className="mb-4 opacity-20" />
-              <p>Select a profile from the left or create a new one.</p>
+            /* ── Empty State ── */
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-400 p-8">
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <Server size={28} className="text-slate-300" />
+              </div>
+              <p className="text-sm">Select a profile or create a new one</p>
             </div>
           )}
         </div>

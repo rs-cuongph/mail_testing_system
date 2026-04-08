@@ -84,14 +84,14 @@ export function SetupPage() {
       <div className="setup-card" style={{ maxWidth: '680px' }}>
         {/* Header */}
         <div className="setup-header">
-          <ServerCog size={40} style={{ margin: '0 auto 12px auto', display: 'block', color: '#60a5fa' }} />
+          <ServerCog size={40} className="mx-auto mb-3 block text-blue-500" />
           <h1>System Configuration</h1>
           <p>Connect your IMAP account to start receiving and testing emails.</p>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="error-message" style={{ marginBottom: '20px' }}>
+          <div className="error-message mb-5">
             <AlertCircle size={16} />
             <span>{error}</span>
           </div>
@@ -101,16 +101,16 @@ export function SetupPage() {
 
           {/* ── IMAP Server Section ── */}
           <section>
-            <div className="flex items-center gap-2 pb-3 mb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <Server size={16} style={{ color: '#60a5fa' }} />
-              <h3 className="text-sm font-semibold uppercase" style={{ color: '#94a3b8', letterSpacing: '0.08em' }}>IMAP Server</h3>
+            <div className="flex items-center gap-2 pb-3 mb-5 border-b border-slate-200">
+              <Server size={16} className="text-blue-500" />
+              <h3 className="text-sm font-semibold uppercase text-slate-500 tracking-wider">IMAP Server</h3>
             </div>
 
             <div className="grid gap-4">
               {/* Host + Port */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2 flex flex-col gap-1.5">
-                  <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Host</Label>
+                  <Label className="text-xs font-medium text-slate-500">Host</Label>
                   <Input
                     required
                     type="text"
@@ -119,11 +119,10 @@ export function SetupPage() {
                     onChange={handleChangeText}
                     placeholder="imap.example.com"
                     className="h-10 text-sm"
-                    style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Port</Label>
+                  <Label className="text-xs font-medium text-slate-500">Port</Label>
                   <Input
                     required
                     type="number"
@@ -131,7 +130,6 @@ export function SetupPage() {
                     value={formData.imapPort}
                     onChange={handleChangeText}
                     className="h-10 text-sm"
-                    style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}
                   />
                 </div>
               </div>
@@ -139,7 +137,7 @@ export function SetupPage() {
               {/* Username + Password */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Username</Label>
+                  <Label className="text-xs font-medium text-slate-500">Username</Label>
                   <Input
                     required
                     type="text"
@@ -148,11 +146,10 @@ export function SetupPage() {
                     onChange={handleChangeText}
                     placeholder="user@example.com"
                     className="h-10 text-sm"
-                    style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Password</Label>
+                  <Label className="text-xs font-medium text-slate-500">Password</Label>
                   <Input
                     required
                     type="password"
@@ -161,7 +158,6 @@ export function SetupPage() {
                     onChange={handleChangeText}
                     placeholder="••••••••"
                     className="h-10 text-sm"
-                    style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}
                   />
                 </div>
               </div>
@@ -169,20 +165,20 @@ export function SetupPage() {
               {/* Sync Mode + Poll Interval + TLS */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Sync Mode</Label>
+                  <Label className="text-xs font-medium text-slate-500">Sync Mode</Label>
                   <Select value={formData.imapMode} onValueChange={(val) => setFormData(prev => ({ ...prev, imapMode: val ?? 'idle' }))}>
-                    <SelectTrigger className="h-10 text-sm" style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}>
+                    <SelectTrigger className="h-10 text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent style={{ background: '#1e293b', borderColor: 'rgba(255,255,255,0.1)' }}>
-                      <SelectItem value="idle" className="text-slate-200 focus:bg-slate-700 focus:text-slate-50">Real-time (IDLE)</SelectItem>
-                      <SelectItem value="poll" className="text-slate-200 focus:bg-slate-700 focus:text-slate-50">Polling</SelectItem>
+                    <SelectContent>
+                      <SelectItem value="idle" className="text-slate-800 focus:bg-slate-100 focus:text-slate-900">Real-time (IDLE)</SelectItem>
+                      <SelectItem value="poll" className="text-slate-800 focus:bg-slate-100 focus:text-slate-900">Polling</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 {formData.imapMode === 'poll' && (
                   <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Poll Interval (ms)</Label>
+                    <Label className="text-xs font-medium text-slate-500">Poll Interval (ms)</Label>
                     <Input
                       required
                       type="number"
@@ -190,7 +186,6 @@ export function SetupPage() {
                       value={formData.imapPollInterval}
                       onChange={handleChangeText}
                       className="h-10 text-sm"
-                      style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}
                     />
                   </div>
                 )}
@@ -199,9 +194,9 @@ export function SetupPage() {
                     id="imapTls"
                     checked={formData.imapTls}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, imapTls: checked as boolean }))}
-                    className="border-white/20 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                    className="border-slate-300 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                   />
-                  <Label htmlFor="imapTls" className="text-sm cursor-pointer" style={{ color: '#e2e8f0', fontWeight: 400 }}>Enable TLS / SSL</Label>
+                  <Label htmlFor="imapTls" className="text-sm cursor-pointer text-slate-700 font-normal">Enable TLS / SSL</Label>
                 </div>
               </div>
             </div>
@@ -209,14 +204,14 @@ export function SetupPage() {
 
           {/* ── Mail Rules Section ── */}
           <section>
-            <div className="flex items-center gap-2 pb-3 mb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <Mail size={16} style={{ color: '#60a5fa' }} />
-              <h3 className="text-sm font-semibold uppercase" style={{ color: '#94a3b8', letterSpacing: '0.08em' }}>Mail Parsing Rules</h3>
+            <div className="flex items-center gap-2 pb-3 mb-5 border-b border-slate-200">
+              <Mail size={16} className="text-blue-500" />
+              <h3 className="text-sm font-semibold uppercase text-slate-500 tracking-wider">Mail Parsing Rules</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Mail Domain</Label>
+                <Label className="text-xs font-medium text-slate-500">Mail Domain</Label>
                 <Input
                   required
                   type="text"
@@ -225,11 +220,10 @@ export function SetupPage() {
                   onChange={handleChangeText}
                   placeholder="example.com"
                   className="h-10 text-sm"
-                  style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label className="text-xs font-medium" style={{ color: '#94a3b8' }}>Base Address</Label>
+                <Label className="text-xs font-medium text-slate-500">Base Address</Label>
                 <Input
                   required
                   type="text"
@@ -238,17 +232,16 @@ export function SetupPage() {
                   onChange={handleChangeText}
                   placeholder="inbox"
                   className="h-10 text-sm"
-                  style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255,255,255,0.1)', color: '#f8fafc' }}
                 />
               </div>
             </div>
-            <p className="mt-2 text-xs" style={{ color: '#64748b' }}>
-              Emails sent to <code style={{ color: '#93c5fd', background: 'rgba(96,165,250,0.1)', padding: '1px 5px', borderRadius: '4px' }}>{formData.mailBaseAddress || 'inbox'}+tag@{formData.mailDomain || 'example.com'}</code> will be grouped by tag.
+            <p className="mt-2 text-xs text-slate-500">
+              Emails sent to <code className="text-blue-700 bg-blue-50 px-1.5 py-px rounded text-xs">{formData.mailBaseAddress || 'inbox'}+tag@{formData.mailDomain || 'example.com'}</code> will be grouped by tag.
             </p>
           </section>
 
           {/* Actions */}
-          <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200">
             {/* Import */}
             <div>
               <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
@@ -256,7 +249,6 @@ export function SetupPage() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="h-9 px-4 text-xs font-medium gap-1.5"
-                style={{ background: 'rgba(255,255,255,0.06)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)' }}
               >
                 <Upload size={13} /> Import Config
               </Button>
@@ -267,7 +259,6 @@ export function SetupPage() {
               type="submit"
               disabled={loading}
               className="h-10 px-6 text-sm font-medium"
-              style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)', color: 'white', border: 'none' }}
             >
               {loading
                 ? <><Loader2 size={15} className="animate-spin mr-2" />Testing Connection...</>

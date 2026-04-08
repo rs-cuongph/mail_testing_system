@@ -46,7 +46,7 @@ export class MailParserService {
     return this.domain;
   }
 
-  async parse(rawEmail: Buffer): Promise<ExtractedEmail | null> {
+  async parse(rawEmail: Buffer, expectedDomain?: string): Promise<ExtractedEmail | null> {
     const parsed: ParsedMail = await simpleParser(rawEmail);
 
     // Extract target address from To header (To field only, not CC/BCC)
@@ -56,8 +56,9 @@ export class MailParserService {
         )
       : [];
 
+    const checkDomain = expectedDomain || this.domain;
     const targetAddress = toAddresses.find(
-      (addr) => addr.address && addr.address.endsWith(`@${this.domain}`),
+      (addr) => addr.address && addr.address.endsWith(`@${checkDomain}`),
     );
 
     if (!targetAddress?.address) return null;

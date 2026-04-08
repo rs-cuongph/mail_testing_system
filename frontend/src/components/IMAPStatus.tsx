@@ -39,17 +39,27 @@ export function IMAPStatus() {
 
   if (loading) return <div className="status-indicator">Loading status...</div>;
 
+  const getStatusStyles = () => {
+    switch (status.status) {
+      case 'connected': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      case 'error': return 'bg-red-50 text-red-700 border-red-200';
+      case 'disconnected': return 'bg-slate-50 text-slate-600 border-slate-200';
+      case 'connecting': return 'bg-amber-50 text-amber-700 border-amber-200';
+      default: return 'bg-slate-50 text-slate-600 border-slate-200';
+    }
+  };
+
   const renderStatusIcon = () => {
     switch (status.status) {
       case 'connected':
-        return <CheckCircle2 size={16} style={{ color: '#10b981' }} />;
+        return <CheckCircle2 size={14} className="text-emerald-500" />;
       case 'disconnected':
-        return <XCircle size={16} style={{ color: '#64748b' }} />;
+        return <XCircle size={14} className="text-slate-400" />;
       case 'error':
-        return <AlertCircle size={16} style={{ color: '#ef4444' }} />;
+        return <AlertCircle size={14} className="text-red-500" />;
       case 'connecting':
       default:
-        return <RefreshCw size={16} className="animate-spin" style={{ color: '#f59e0b', animation: 'spin 1s linear infinite' }} />;
+        return <RefreshCw size={14} className="text-amber-500 animate-spin" />;
     }
   };
 
@@ -65,18 +75,8 @@ export function IMAPStatus() {
 
   return (
     <div 
-      className="status-indicator" 
-      style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '6px', 
-        fontSize: '0.875rem', 
-        color: '#cbd5e1',
-        background: 'rgba(30, 41, 59, 0.5)',
-        padding: '4px 8px',
-        borderRadius: '6px',
-        cursor: status.error ? 'help' : 'default'
-      }}
+      className={`status-indicator flex items-center gap-1.5 text-[13px] font-medium px-2.5 h-8 rounded-lg border transition-colors ${getStatusStyles()}`}
+      style={{ cursor: status.error ? 'help' : 'default' }}
       title={status.error || 'IMAP connection status'}
     >
       {renderStatusIcon()}

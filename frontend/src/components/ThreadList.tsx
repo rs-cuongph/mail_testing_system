@@ -49,7 +49,7 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
     loadData();
     const socket = getSocket();
 
-    socket.on('thread:new', ({ thread }: { thread: Thread }) => {
+    const onThreadNew = ({ thread }: { thread: Thread }) => {
       setThreads((prev) => [
         {
           ...thread,
@@ -58,9 +58,9 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
         },
         ...prev,
       ]);
-    });
+    };
 
-    socket.on('email:new', ({ threadTag }: { threadTag: string }) => {
+    const onEmailNew = ({ threadTag }: { threadTag: string }) => {
       setThreads((prev) =>
         prev.map((t) =>
           t.tag === threadTag
@@ -68,9 +68,9 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
             : t,
         ).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
       );
-    });
+    };
 
-    socket.on('email:read', ({ threadTag }: { threadTag: string }) => {
+    const onEmailRead = ({ threadTag }: { threadTag: string }) => {
       setThreads((prev) =>
         prev.map((t) =>
           t.tag === threadTag
@@ -78,35 +78,44 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
             : t,
         )
       );
-    });
+    };
 
-    socket.on('thread:deleted', ({ threadTag }: { threadTag: string }) => {
+    const onThreadDeleted = ({ threadTag }: { threadTag: string }) => {
       setThreads((prev) => prev.filter((t) => t.tag !== threadTag));
-    });
+    };
 
-    socket.on('all:cleared', () => setThreads([]));
+    const onAllCleared = () => setThreads([]);
 
-    socket.on('thread:read', ({ threadTag }: { threadTag: string }) => {
+    const onThreadRead = ({ threadTag }: { threadTag: string }) => {
       setThreads((prev) => prev.map((t) => t.tag === threadTag ? { ...t, unreadCount: 0 } : t));
-    });
+    };
 
-    socket.on('all:read', () => {
+    const onAllRead = () => {
       setThreads((prev) => prev.map((t) => ({ ...t, unreadCount: 0 })));
-    });
+    };
 
-    socket.on('profile:switched', () => {
+    const onProfileSwitched = () => {
       loadData();
-    });
+    };
+
+    socket.on('thread:new', onThreadNew);
+    socket.on('email:new', onEmailNew);
+    socket.on('email:read', onEmailRead);
+    socket.on('thread:deleted', onThreadDeleted);
+    socket.on('all:cleared', onAllCleared);
+    socket.on('thread:read', onThreadRead);
+    socket.on('all:read', onAllRead);
+    socket.on('profile:switched', onProfileSwitched);
 
     return () => {
-      socket.off('thread:new');
-      socket.off('email:new');
-      socket.off('email:read');
-      socket.off('thread:deleted');
-      socket.off('all:cleared');
-      socket.off('thread:read');
-      socket.off('all:read');
-      socket.off('profile:switched');
+      socket.off('thread:new', onThreadNew);
+      socket.off('email:new', onEmailNew);
+      socket.off('email:read', onEmailRead);
+      socket.off('thread:deleted', onThreadDeleted);
+      socket.off('all:cleared', onAllCleared);
+      socket.off('thread:read', onThreadRead);
+      socket.off('all:read', onAllRead);
+      socket.off('profile:switched', onProfileSwitched);
     };
   }, []);
 

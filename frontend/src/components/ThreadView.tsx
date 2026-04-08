@@ -28,31 +28,37 @@ export function ThreadView({ tag, onSelectEmail, selectedEmailId }: Props) {
       .finally(() => setLoading(false));
 
     const socket = getSocket();
-    socket.on('email:new', ({ threadTag, email }: { threadTag: string; email: EmailSummary }) => {
+    
+    const onEmailNew = ({ threadTag, email }: { threadTag: string; email: EmailSummary }) => {
       if (threadTag === tag) {
         setEmails((prev) => [email, ...prev]);
       }
-    });
+    };
 
-    socket.on('email:read', ({ emailId }: { emailId: string }) => {
+    const onEmailRead = ({ emailId }: { emailId: string }) => {
       setEmails((prev) => prev.map((e) => e.id === emailId ? { ...e, isRead: true } : e));
-    });
+    };
 
-    socket.on('thread:read', ({ threadTag }: { threadTag: string }) => {
+    const onThreadRead = ({ threadTag }: { threadTag: string }) => {
       if (threadTag === tag) {
         setEmails((prev) => prev.map((e) => ({ ...e, isRead: true })));
       }
-    });
+    };
 
-    socket.on('all:read', () => {
+    const onAllRead = () => {
       setEmails((prev) => prev.map((e) => ({ ...e, isRead: true })));
-    });
+    };
+
+    socket.on('email:new', onEmailNew);
+    socket.on('email:read', onEmailRead);
+    socket.on('thread:read', onThreadRead);
+    socket.on('all:read', onAllRead);
 
     return () => { 
-      socket.off('email:new'); 
-      socket.off('email:read');
-      socket.off('thread:read');
-      socket.off('all:read');
+      socket.off('email:new', onEmailNew); 
+      socket.off('email:read', onEmailRead);
+      socket.off('thread:read', onThreadRead);
+      socket.off('all:read', onAllRead);
     };
   }, [tag]);
 
