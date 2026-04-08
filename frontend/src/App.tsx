@@ -5,7 +5,7 @@ import { ThreadView } from './components/ThreadView';
 import { EmailDetail } from './components/EmailDetail';
 import { SearchResults } from './components/SearchResults';
 import { type AppConfig } from './services/api';
-import { Inbox, Mailbox, Settings } from 'lucide-react';
+import { Mailbox, Settings } from 'lucide-react';
 import { SetupPage } from './pages/SetupPage';
 import { ProfilesPage } from './pages/ProfilesPage';
 import { IMAPStatus } from './components/IMAPStatus';
@@ -42,7 +42,7 @@ function MainApp() {
           .then((settings) => {
             setConfig({ mailDomain: settings.mailDomain, mailBaseAddress: settings.mailBaseAddress });
           })
-          .catch(() => {});
+          .catch(() => { });
       });
     };
     window.addEventListener('profile:switched', handleProfileSwitched);
@@ -74,7 +74,10 @@ function MainApp() {
   return (
     <div className="app-layout">
       <header className="app-header">
-        <div className="app-logo"><Inbox size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> Mail Testing System</div>
+        <div className="app-logo" style={{ display: 'flex', alignItems: 'center' }}>
+          <img src="/mail-catcher.svg" alt="Mail Catcher" width="48" height="48" style={{ marginRight: '8px', objectFit: 'contain' }} />
+          Mail Catcher
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <IMAPStatus />
           <ProfileSwitcher />
@@ -94,7 +97,7 @@ function MainApp() {
 
         <main className="main-panel">
           {searchQuery && (
-            <SearchResults 
+            <SearchResults
               query={searchQuery}
               onSelectResult={handleSelectSearchResult}
             />

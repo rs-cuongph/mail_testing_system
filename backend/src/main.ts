@@ -26,7 +26,7 @@ async function bootstrap() {
   const port = parseInt(process.env.PORT ?? '7654', 10);
   await app.listen(port);
   const url = await app.getUrl();
-  console.log(`🚀 Mail Testing System running on ${url}`);
+  console.log(`🚀 Mail Catcher running on ${url}`);
 }
 bootstrap().catch((err) => {
   console.error('❌ Failed to start:', err);
