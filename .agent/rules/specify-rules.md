@@ -11,6 +11,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-08
 - PostgreSQL 16 (via Prisma) (006-multi-imap-profiles)
 - Node.js 20+ (Electron runtime), TypeScript + Electron, electron-builder, Prisma (SQLite adapter), NestJS, React (007-desktop-app-migration)
 - SQLite (embedded local file), Electron `safeStorage` (Secure OS Keychain for IMAP passwords) (007-desktop-app-migration)
+- Rust (stable ≥1.77) for Tauri shell, TypeScript for frontend + backend + Tauri v2, tauri-plugin-shell, tauri-plugin-notification, tauri-plugin-store, keyring (Rust crate) (008-electron-to-tauri)
+- SQLite via Prisma `@prisma/adapter-libsql` (unchanged) (008-electron-to-tauri)
 
 - TypeScript 5.x, Node.js 18+ LTS + NestJS 10+, imapflow, mailparser, Prisma, React 18+, Socket.IO (001-inbound-mail-threading)
 
@@ -30,9 +32,9 @@ npm test && npm run lint
 TypeScript 5.x, Node.js 18+ LTS: Follow standard conventions
 
 ## Recent Changes
+- 008-electron-to-tauri: Added Rust (stable ≥1.77) for Tauri shell, TypeScript for frontend + backend + Tauri v2, tauri-plugin-shell, tauri-plugin-notification, tauri-plugin-store, keyring (Rust crate)
 - 007-desktop-app-migration: Added Node.js 20+ (Electron runtime), TypeScript + Electron, electron-builder, Prisma (SQLite adapter), NestJS, React
 - 006-multi-imap-profiles: Added TypeScript 5.x (Node.js 22) + NestJS, React 19, Prisma ORM, ImapFlow, Vite, Shadcn UI
-- 004-dynamic-fe-config: Added Node.js/TypeScript (Backend), React/TypeScript (Frontend) + NestJS (EventEmitter2, TypeORM/Prisma), React (Vite)
 
 
 <!-- MANUAL ADDITIONS START -->

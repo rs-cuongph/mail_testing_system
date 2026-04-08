@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, Req } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
-import { CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
+import { ActivateProfileDto, CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
 
 @Controller('profiles')
 export class ProfilesController {
@@ -49,7 +49,7 @@ export class ProfilesController {
   }
 
   @Post(':id/activate')
-  activate(@Param('id') id: string) {
-    return this.profilesService.activate(id);
+  activate(@Param('id') id: string, @Body() dto: ActivateProfileDto) {
+    return this.profilesService.activate(id, dto.imapPassword);
   }
 }

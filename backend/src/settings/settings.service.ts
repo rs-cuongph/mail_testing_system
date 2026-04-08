@@ -22,6 +22,7 @@ export class SettingsService {
       imapHost: defaultProfile.imapHost,
       imapPort: defaultProfile.imapPort,
       imapUser: defaultProfile.imapUser,
+      credentialKey: defaultProfile.credentialKey,
       imapPassword: '••••••••',
       imapTls: defaultProfile.imapTls,
       imapMode: defaultProfile.imapMode,
@@ -40,7 +41,7 @@ export class SettingsService {
   }
 
   async updateSettings(dto: UpdateSettingsDto) {
-    let raw = await this.prisma.imapProfile.findFirst({ where: { isActive: true } });
+    const raw = await this.prisma.imapProfile.findFirst({ where: { isActive: true } });
 
     const payload = {
       name: raw ? raw.name : 'Default System Profile',
@@ -48,24 +49,24 @@ export class SettingsService {
       imapHost: dto.imapHost,
       imapPort: dto.imapPort,
       imapUser: dto.imapUser,
+      credentialKey: dto.credentialKey ?? raw?.credentialKey ?? undefined,
       imapTls: dto.imapTls,
       imapMode: dto.imapMode,
       imapPollInterval: dto.imapPollInterval,
       mailDomain: dto.mailDomain,
       mailBaseAddress: dto.mailBaseAddress,
-      // If there's a new password passed, we encrypt it. Oh wait, profilesService handles encryption
     };
 
     if (dto.imapPassword && dto.imapPassword !== '••••••••') {
-      (payload as any).imapPassword = dto.imapPassword;
+      (payload as typeof payload & { imapPassword: string }).imapPassword = dto.imapPassword;
     }
 
     let saved;
     if (raw) {
       saved = await this.profilesService.update(raw.id, payload);
     } else {
-      saved = await this.profilesService.create(payload as any);
-      await this.profilesService.activate(saved.id);
+      saved = await this.profilesService.create(payload as typeof payload & { imapPassword?: string });
+      await this.profilesService.activate(saved.id, dto.imapPassword ?? null);
     }
 
     return saved;

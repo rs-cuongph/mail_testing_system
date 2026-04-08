@@ -95,3 +95,9 @@ export class UpdateProfileDto {
   @IsOptional()
   mailBaseAddress?: string;
 }
+
+export class ActivateProfileDto {
+  @IsString()
+  @IsOptional()
+  imapPassword?: string;
+}

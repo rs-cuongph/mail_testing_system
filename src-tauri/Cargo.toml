@@ -1,0 +1,28 @@
+[package]
+name = "mail-catcher-tauri"
+version = "0.1.0"
+description = "Mail Catcher desktop shell powered by Tauri"
+authors = ["Mail Catcher"]
+edition = "2021"
+
+[lib]
+name = "mail_catcher_tauri_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.2" }
+
+[dependencies]
+anyhow = "1.0"
+keyring = "3.6"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tauri = { version = "2.9.3", features = [] }
+tauri-plugin-notification = "2.3.0"
+tauri-plugin-shell = "2.3.5"
+tauri-plugin-single-instance = "2.3.0"
+tauri-plugin-store = "2.4.2"
+tokio = { version = "1.48", features = ["macros", "process", "rt-multi-thread", "sync", "time"] }
+uuid = { version = "1.18", features = ["v4"] }

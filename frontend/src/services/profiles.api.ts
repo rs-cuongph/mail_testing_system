@@ -44,7 +44,11 @@ export const profilesApi = {
     body: JSON.stringify(data),
   }),
   deleteProfile: (id: string) => request<{ success: boolean; message: string }>(`/profiles/${id}`, { method: 'DELETE' }),
-  activateProfile: (id: string) => request<{ success: boolean; activeProfileId: string }>(`/profiles/${id}/activate`, { method: 'POST' }),
+  activateProfile: (id: string, data?: { imapPassword?: string }) => request<{ success: boolean; activeProfileId: string }>(`/profiles/${id}/activate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data ?? {}),
+  }),
   exportProfiles: () => request<Partial<ImapProfile>[]>('/profiles/export'),
   importProfiles: (data: Partial<ImapProfile>[]) => request<{ success: boolean; imported: number }>('/profiles/import', {
     method: 'POST',

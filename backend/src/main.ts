@@ -2,12 +2,24 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
+async function runMigrationsOnly() {
+  console.log('Migration mode requested. Prisma migrations are handled during the build pipeline.');
+}
+
 async function bootstrap() {
+  if (process.argv.includes('--migrate')) {
+    await runMigrationsOnly();
+    return;
+  }
+
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost,http://localhost:5173')
+  const allowedOrigins = (
+    process.env.FRONTEND_URL ||
+    'tauri://localhost,http://tauri.localhost,http://localhost,http://localhost:5173'
+  )
     .split(',')
     .map(o => o.trim());
   app.enableCors({

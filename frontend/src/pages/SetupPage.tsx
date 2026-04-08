@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { getCredential, isDesktopApp, setCredential } from '../lib/tauri-bridge';
 import {
   Select,
   SelectContent,
@@ -39,7 +40,10 @@ export function SetupPage() {
     }
 
     settingsApi.getSettings().then(data => {
-      setFormData(data);
+      setFormData({
+        ...data,
+        imapPassword: '',
+      });
     }).catch(() => {});
   }, []);
 
@@ -74,7 +78,26 @@ export function SetupPage() {
     setLoading(true);
     setError(null);
     try {
-      await settingsApi.updateSettings(formData);
+      const payload: SystemSettings = { ...formData };
+      const submittedPassword = payload.imapPassword?.trim() ?? '';
+      const currentCredentialKey = payload.credentialKey ?? null;
+
+      if (isDesktopApp()) {
+        if (submittedPassword) {
+          payload.credentialKey = await setCredential(currentCredentialKey, submittedPassword);
+        } else if (currentCredentialKey) {
+          const storedPassword = await getCredential(currentCredentialKey);
+          if (storedPassword) {
+            payload.imapPassword = storedPassword;
+          }
+        }
+      }
+
+      if (!submittedPassword && !payload.imapPassword) {
+        delete payload.imapPassword;
+      }
+
+      await settingsApi.updateSettings(payload);
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to save settings');

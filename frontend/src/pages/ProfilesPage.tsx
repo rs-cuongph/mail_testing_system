@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PROVIDER_PRESETS } from '../lib/provider-presets';
+import { deleteCredential, getCredential, isDesktopApp, setCredential } from '../lib/tauri-bridge';
 import './SetupPage.css';
 
 export function ProfilesPage() {
@@ -133,7 +134,16 @@ export function ProfilesPage() {
 
   const handleActivate = async (id: string) => {
     try {
-      await profilesApi.activateProfile(id);
+      const profile = profiles.find((entry) => entry.id === id);
+      const imapPassword =
+        isDesktopApp() && profile?.credentialKey
+          ? await getCredential(profile.credentialKey)
+          : undefined;
+
+      await profilesApi.activateProfile(
+        id,
+        imapPassword ? { imapPassword } : undefined,
+      );
       setActiveProfileId(id);
       await fetchProfiles();
     } catch (err: any) {
@@ -144,7 +154,11 @@ export function ProfilesPage() {
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this profile?')) return;
     try {
+      const profile = profiles.find((entry) => entry.id === id);
       await profilesApi.deleteProfile(id);
+      if (isDesktopApp() && profile?.credentialKey) {
+        await deleteCredential(profile.credentialKey);
+      }
       if (selectedProfile?.id === id) {
         setSelectedProfile(null);
         setIsEditing(false);
@@ -168,11 +182,31 @@ export function ProfilesPage() {
     setSaving(true);
     setError(null);
     try {
+      const payload: Partial<ImapProfile> = { ...formData };
+      const submittedPassword = payload.imapPassword?.trim() ?? '';
+      const currentCredentialKey =
+        (selectedProfile?.credentialKey ?? payload.credentialKey ?? null) || null;
+
+      if (isDesktopApp()) {
+        if (submittedPassword) {
+          payload.credentialKey = await setCredential(currentCredentialKey, submittedPassword);
+        } else if (currentCredentialKey) {
+          const storedPassword = await getCredential(currentCredentialKey);
+          if (storedPassword) {
+            payload.imapPassword = storedPassword;
+          }
+        }
+      }
+
+      if (!submittedPassword && !payload.imapPassword) {
+        delete payload.imapPassword;
+      }
+
       let savedProfile;
       if (selectedProfile) {
-        savedProfile = await profilesApi.updateProfile(selectedProfile.id, formData);
+        savedProfile = await profilesApi.updateProfile(selectedProfile.id, payload);
       } else {
-        savedProfile = await profilesApi.createProfile(formData as ImapProfile);
+        savedProfile = await profilesApi.createProfile(payload as ImapProfile);
       }
       setSelectedProfile(savedProfile);
       setIsEditing(false);

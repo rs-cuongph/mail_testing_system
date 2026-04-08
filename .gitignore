@@ -6,6 +6,11 @@ build/
 *.log
 coverage/
 uploads/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/binaries/backend-*.exe
+backend/backend.exe
+backend/sea-prep.blob
 .DS_Store
 Thumbs.db
 *.tmp

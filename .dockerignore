@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+coverage/
+backend/dist/
+frontend/dist/
+src-tauri/target/
+src-tauri/binaries/
+.git/
+.gitignore
+.dockerignore
+*.log
+.env
+.env.*
+Dockerfile*

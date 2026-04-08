@@ -18,6 +18,10 @@ export class UpdateSettingsDto {
   @IsOptional()
   imapPassword?: string;
 
+  @IsString()
+  @IsOptional()
+  credentialKey?: string;
+
   @IsBoolean()
   @IsNotEmpty()
   imapTls: boolean;

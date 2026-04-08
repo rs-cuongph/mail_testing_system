@@ -13,6 +13,7 @@ import { IMAPStatus } from './components/IMAPStatus';
 import { ProfileProvider } from './contexts/ProfileContext';
 import { ProfileSwitcher } from './components/ProfileSwitcher';
 import { getDesktopNotificationsEnabled, isDesktopNotificationsSupported, onDesktopNotificationClick, setDesktopNotificationsEnabled, showDesktopNotification } from './services/desktop';
+import { getCloseBehavior, isDesktopApp, setCloseBehavior } from './lib/tauri-bridge';
 import { onSocketEvent } from './services/socket';
 import { getTraceEntries, getUnviewedErrorCount, subscribeTraceEntries, subscribeTraceMeta, type TraceEntry } from './services/trace';
 import './index.css';
@@ -30,6 +31,7 @@ function MainApp() {
   const [toastEntry, setToastEntry] = useState<TraceEntry | null>(null);
   const [notificationsSupported, setNotificationsSupported] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [closeBehavior, setCloseBehaviorState] = useState<'tray' | 'quit'>('tray');
   const navigate = useNavigate();
   const selectedTagRef = useRef<string | null>(selectedTag);
   const selectedEmailIdRef = useRef<string | null>(selectedEmailId);
@@ -148,6 +150,9 @@ function MainApp() {
   useEffect(() => {
     void isDesktopNotificationsSupported().then(setNotificationsSupported);
     void getDesktopNotificationsEnabled().then(setNotificationsEnabled);
+    if (isDesktopApp()) {
+      void getCloseBehavior().then(setCloseBehaviorState);
+    }
   }, []);
 
   useEffect(() => {
@@ -254,6 +259,11 @@ function MainApp() {
     setNotificationsEnabled(next);
   };
 
+  const handleCloseBehaviorChange = async (value: 'tray' | 'quit') => {
+    const nextValue = await setCloseBehavior(value);
+    setCloseBehaviorState(nextValue);
+  };
+
   const exampleAddress = `${config.mailBaseAddress}+tag@${config.mailDomain}`;
 
   if (profileState === 'checking') {
@@ -276,6 +286,20 @@ function MainApp() {
         <div className="app-header-actions">
           <IMAPStatus />
           <ProfileSwitcher />
+          {isDesktopApp() && (
+            <label className="btn-secondary-sm" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ whiteSpace: 'nowrap' }}>Close</span>
+              <select
+                value={closeBehavior}
+                onChange={(event) => void handleCloseBehaviorChange(event.target.value as 'tray' | 'quit')}
+                style={{ border: 'none', background: 'transparent', color: 'inherit' }}
+                aria-label="Close button behavior"
+              >
+                <option value="tray">Minimize to tray</option>
+                <option value="quit">Quit application</option>
+              </select>
+            </label>
+          )}
           <Link to="/profiles" className="btn-secondary-sm" style={{ textDecoration: 'none' }}>
             <Settings size={14} /> Profiles
           </Link>

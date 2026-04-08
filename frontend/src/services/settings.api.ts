@@ -4,6 +4,7 @@ export interface SystemSettings {
   imapHost: string;
   imapPort: number;
   imapUser: string;
+  credentialKey?: string | null;
   imapPassword?: string;
   imapTls: boolean;
   imapMode: string;

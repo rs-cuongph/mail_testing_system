@@ -63,7 +63,10 @@ export class ProfilesService {
     });
 
     const isFirstProfile = (await this.prisma.imapProfile.count()) === 0;
-    const credentialKey = await this.credentialBridge.savePassword(dto.imapPassword);
+    const credentialKey = await this.credentialBridge.savePassword(
+      dto.imapPassword,
+      dto.credentialKey,
+    );
 
     const profile = await this.prisma.imapProfile.create({
       data: {
@@ -129,9 +132,10 @@ export class ProfilesService {
     delete dataToSave.imapPassword;
 
     if (suppliedPassword) {
+      const requestedCredentialKey = dto.credentialKey ?? existing.credentialKey;
       dataToSave.credentialKey = await this.credentialBridge.savePassword(
         suppliedPassword,
-        existing.credentialKey,
+        requestedCredentialKey,
       );
     }
 
@@ -166,9 +170,13 @@ export class ProfilesService {
     return { success: true, message: 'Profile deleted' };
   }
 
-  async activate(id: string) {
+  async activate(id: string, imapPassword?: string | null) {
     const profile = await this.prisma.imapProfile.findUnique({ where: { id } });
     if (!profile) throw new NotFoundException('Profile not found');
+
+    if (imapPassword) {
+      await this.credentialBridge.rememberPassword(profile.credentialKey, imapPassword);
+    }
 
     await this.prisma.imapProfile.updateMany({
       where: { isActive: true },
