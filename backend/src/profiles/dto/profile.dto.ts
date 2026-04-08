@@ -22,6 +22,10 @@ export class CreateProfileDto {
   @IsOptional()
   imapPassword?: string;
 
+  @IsString()
+  @IsOptional()
+  credentialKey?: string;
+
   @IsBoolean()
   @IsOptional()
   imapTls?: boolean;
@@ -66,6 +70,10 @@ export class UpdateProfileDto {
   @IsString()
   @IsOptional()
   imapPassword?: string;
+
+  @IsString()
+  @IsOptional()
+  credentialKey?: string;
 
   @IsBoolean()
   @IsOptional()

@@ -11,11 +11,13 @@ import { ConfigController } from './config/config.controller';
 import { CategoriesModule } from './categories/categories.module';
 import { SettingsModule } from './settings/settings.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { CredentialsModule } from './credentials/credentials.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
+    CredentialsModule,
     PrismaModule,
     EventsModule,
     ImapModule,

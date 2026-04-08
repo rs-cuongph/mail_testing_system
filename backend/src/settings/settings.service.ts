@@ -2,13 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfilesService } from '../profiles/profiles.service';
 import { UpdateSettingsDto } from './dto/settings.dto';
-import { encrypt, decrypt } from '../utils/crypto.util';
+import { CredentialBridgeService } from '../credentials/credential-bridge.service';
 
 @Injectable()
 export class SettingsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly profilesService: ProfilesService,
+    private readonly credentialBridge: CredentialBridgeService,
   ) {}
 
   async getSettings() {
@@ -35,7 +36,7 @@ export class SettingsService {
     if (!raw) {
       throw new NotFoundException('Configuration not found');
     }
-    return decrypt(raw.imapPassword);
+    return this.credentialBridge.getPassword(raw.credentialKey);
   }
 
   async updateSettings(dto: UpdateSettingsDto) {

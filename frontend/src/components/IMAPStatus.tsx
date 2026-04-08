@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { settingsApi } from '../services/settings.api';
 import type { SettingsStatus } from '../services/settings.api';
 import { CheckCircle2, XCircle, AlertCircle, RefreshCw } from 'lucide-react';
-import { getSocket } from '../services/socket';
+import { onSocketEvent } from '../services/socket';
+import { traceError } from '../services/trace';
 
 export function IMAPStatus() {
   const [status, setStatus] = useState<SettingsStatus>({ status: 'disconnected' });
@@ -15,6 +16,7 @@ export function IMAPStatus() {
         const data = await settingsApi.getStatus();
         setStatus(data);
       } catch (err) {
+        traceError('app', 'Failed to fetch IMAP status', err);
         setStatus({ status: 'error', error: 'Failed to fetch status' });
       } finally {
         setLoading(false);
@@ -23,17 +25,13 @@ export function IMAPStatus() {
 
     fetchStatus();
     const interval = setInterval(fetchStatus, 10000);
-
-    const socket = getSocket();
-
-    // Socket listener for real-time status updates
-    socket.on('imap.status', (newStatus: SettingsStatus) => {
+    const cleanupSocket = onSocketEvent<SettingsStatus>('imap.status', (newStatus) => {
       setStatus(newStatus);
     });
 
     return () => {
       clearInterval(interval);
-      socket.off('imap.status');
+      cleanupSocket();
     };
   }, []);
 

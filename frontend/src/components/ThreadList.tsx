@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Thread, Category } from '../types';
 import { api, type AppConfig } from '../services/api';
-import { getSocket } from '../services/socket';
+import { onSocketEvent } from '../services/socket';
 import { SearchBar } from './SearchBar';
 import { FilterTabs } from './FilterTabs';
 import { CategoryManager } from './CategoryManager';
 import { CategoryBadge } from './CategoryBadge';
 import { Trash2, X, CheckSquare, Layers, Tag, Settings } from 'lucide-react';
+import { traceError } from '../services/trace';
 
 interface Props {
   selectedTag: string | null;
@@ -39,6 +40,7 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       setCategories(catsRes);
       setError(null);
     } catch (e: any) {
+      traceError('app', 'Failed to load thread list data', e);
       setError(e.message);
     } finally {
       setLoading(false);
@@ -47,7 +49,6 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
 
   useEffect(() => {
     loadData();
-    const socket = getSocket();
 
     const onThreadNew = ({ thread }: { thread: Thread }) => {
       setThreads((prev) => [
@@ -98,24 +99,24 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       loadData();
     };
 
-    socket.on('thread:new', onThreadNew);
-    socket.on('email:new', onEmailNew);
-    socket.on('email:read', onEmailRead);
-    socket.on('thread:deleted', onThreadDeleted);
-    socket.on('all:cleared', onAllCleared);
-    socket.on('thread:read', onThreadRead);
-    socket.on('all:read', onAllRead);
-    socket.on('profile:switched', onProfileSwitched);
+    const cleanupThreadNew = onSocketEvent('thread:new', onThreadNew);
+    const cleanupEmailNew = onSocketEvent('email:new', onEmailNew);
+    const cleanupEmailRead = onSocketEvent('email:read', onEmailRead);
+    const cleanupThreadDeleted = onSocketEvent('thread:deleted', onThreadDeleted);
+    const cleanupAllCleared = onSocketEvent('all:cleared', onAllCleared);
+    const cleanupThreadRead = onSocketEvent('thread:read', onThreadRead);
+    const cleanupAllRead = onSocketEvent('all:read', onAllRead);
+    const cleanupProfileSwitched = onSocketEvent('profile:switched', onProfileSwitched);
 
     return () => {
-      socket.off('thread:new', onThreadNew);
-      socket.off('email:new', onEmailNew);
-      socket.off('email:read', onEmailRead);
-      socket.off('thread:deleted', onThreadDeleted);
-      socket.off('all:cleared', onAllCleared);
-      socket.off('thread:read', onThreadRead);
-      socket.off('all:read', onAllRead);
-      socket.off('profile:switched', onProfileSwitched);
+      cleanupThreadNew();
+      cleanupEmailNew();
+      cleanupEmailRead();
+      cleanupThreadDeleted();
+      cleanupAllCleared();
+      cleanupThreadRead();
+      cleanupAllRead();
+      cleanupProfileSwitched();
     };
   }, []);
 
@@ -126,6 +127,7 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       await api.deleteThread(tag);
       setThreads((prev) => prev.filter((t) => t.tag !== tag));
     } catch (e: any) {
+      traceError('app', 'Failed to delete thread', e, { tag });
       alert(e.message);
     }
   };
@@ -137,6 +139,7 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       await api.deleteAll();
       setThreads([]);
     } catch (e: any) {
+      traceError('app', 'Failed to clear all threads', e);
       alert(e.message);
     } finally {
       setClearing(false);
@@ -148,6 +151,7 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       await api.markAllAsRead();
       setThreads((prev) => prev.map((t) => ({ ...t, unreadCount: 0 })));
     } catch (e: any) {
+      traceError('app', 'Failed to mark all threads as read', e);
       alert(e.message);
     }
   };
@@ -166,6 +170,7 @@ export function ThreadList({ selectedTag, onSelectThread, config, onSearch }: Pr
       }
       loadData(); // reload to get updated threads
     } catch (e: any) {
+      traceError('app', 'Failed to assign category to thread', e, { threadId, categoryId });
       alert(e.message);
     }
   };

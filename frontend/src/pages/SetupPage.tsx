@@ -34,6 +34,10 @@ export function SetupPage() {
   });
 
   useEffect(() => {
+    if (!window.localStorage.getItem('activeProfileId')) {
+      return;
+    }
+
     settingsApi.getSettings().then(data => {
       setFormData(data);
     }).catch(() => {});

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { EmailSummary } from '../types';
 import { api } from '../services/api';
-import { getSocket } from '../services/socket';
+import { onSocketEvent } from '../services/socket';
 import { MessageSquare, Paperclip, CheckCircle } from 'lucide-react';
+import { traceError } from '../services/trace';
 
 interface Props {
   tag: string;
@@ -24,10 +25,11 @@ export function ThreadView({ tag, onSelectEmail, selectedEmailId }: Props) {
         setThreadAddress(res.thread.fullAddress);
         setError(null);
       })
-      .catch((e) => setError(e.message))
+      .catch((e) => {
+        traceError('app', 'Failed to load thread view', e, { tag });
+        setError(e.message);
+      })
       .finally(() => setLoading(false));
-
-    const socket = getSocket();
     
     const onEmailNew = ({ threadTag, email }: { threadTag: string; email: EmailSummary }) => {
       if (threadTag === tag) {
@@ -49,16 +51,16 @@ export function ThreadView({ tag, onSelectEmail, selectedEmailId }: Props) {
       setEmails((prev) => prev.map((e) => ({ ...e, isRead: true })));
     };
 
-    socket.on('email:new', onEmailNew);
-    socket.on('email:read', onEmailRead);
-    socket.on('thread:read', onThreadRead);
-    socket.on('all:read', onAllRead);
+    const cleanupEmailNew = onSocketEvent('email:new', onEmailNew);
+    const cleanupEmailRead = onSocketEvent('email:read', onEmailRead);
+    const cleanupThreadRead = onSocketEvent('thread:read', onThreadRead);
+    const cleanupAllRead = onSocketEvent('all:read', onAllRead);
 
     return () => { 
-      socket.off('email:new', onEmailNew); 
-      socket.off('email:read', onEmailRead);
-      socket.off('thread:read', onThreadRead);
-      socket.off('all:read', onAllRead);
+      cleanupEmailNew();
+      cleanupEmailRead();
+      cleanupThreadRead();
+      cleanupAllRead();
     };
   }, [tag]);
 
@@ -72,6 +74,7 @@ export function ThreadView({ tag, onSelectEmail, selectedEmailId }: Props) {
       await api.markThreadAsRead(tag);
       setEmails((prev) => prev.map((e) => ({ ...e, isRead: true })));
     } catch (e: any) {
+      traceError('app', 'Failed to mark thread as read', e, { tag });
       console.error(e);
     }
   };

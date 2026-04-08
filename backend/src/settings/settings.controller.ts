@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SettingsService } from './settings.service';
-import { UpdateSettingsDto } from './dto/settings.dto';
 import { ImapService } from '../imap/imap.service';
+import { UpdateSettingsDto } from './dto/settings.dto';
+import { SettingsService } from './settings.service';
+
+const MASKED_PASSWORD = '••••••••';
 
 @Controller('settings')
 export class SettingsController {
@@ -14,7 +16,7 @@ export class SettingsController {
 
   @Get()
   async getSettings() {
-    return await this.settingsService.getSettings();
+    return this.settingsService.getSettings();
   }
 
   @Get('status')
@@ -24,17 +26,19 @@ export class SettingsController {
 
   @Post()
   async updateSettings(@Body() dto: UpdateSettingsDto) {
-    // Determine the actual password to test with
-    let testPassword = dto.imapPassword;
-    if (!testPassword || testPassword === '••••••••') {
+    let testPassword: string | null = dto.imapPassword ?? null;
+    if (!testPassword || testPassword === MASKED_PASSWORD) {
       try {
         testPassword = await this.settingsService.getRawPassword();
-      } catch (e) {
+      } catch {
         throw new BadRequestException('Password required for initial setup');
       }
     }
 
-    // 1. Test IMAP Connection
+    if (!testPassword) {
+      throw new BadRequestException('Password required for initial setup');
+    }
+
     try {
       await this.imapService.testConnection({
         host: dto.imapHost,
@@ -43,14 +47,11 @@ export class SettingsController {
         user: dto.imapUser,
         pass: testPassword,
       });
-    } catch (err) {
+    } catch (err: any) {
       throw new BadRequestException(`IMAP connection failed: ${err.message}`);
     }
 
-    // 2. Save settings
     await this.settingsService.updateSettings(dto);
-
-    // 3. EVENT EMITTING
     this.eventEmitter.emit('config.updated');
 
     return {
@@ -59,4 +60,3 @@ export class SettingsController {
     };
   }
 }
-

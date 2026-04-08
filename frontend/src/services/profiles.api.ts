@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from './runtime';
+
 export interface ImapProfile {
   id: string;
   name: string;
@@ -5,6 +7,7 @@ export interface ImapProfile {
   imapHost: string;
   imapPort: number;
   imapUser: string;
+  credentialKey?: string | null;
   imapPassword?: string;
   imapTls: boolean;
   imapMode: string;
@@ -17,10 +20,8 @@ export interface ImapProfile {
   updatedAt: string;
 }
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:7654/api';
-
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, options);
+  const res = await fetch(`${getApiBaseUrl()}${path}`, options);
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error(error.message ?? 'Request failed');

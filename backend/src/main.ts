@@ -12,8 +12,8 @@ async function bootstrap() {
     .map(o => o.trim());
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (curl, mobile apps, etc.)
-      if (!origin) return callback(null, true);
+      // Allow requests with no origin or file:// origins used by Electron.
+      if (!origin || origin === 'null') return callback(null, true);
       if (allowedOrigins.some(o => origin.startsWith(o))) {
         callback(null, true);
       } else {

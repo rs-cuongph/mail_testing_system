@@ -1,0 +1,75 @@
+{
+  "name": "mail-testing-system-electron",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mail Catcher desktop app for email testing and real-time inbox inspection",
+  "author": "Mail Testing System Team",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:backend": "npm run build:desktop --prefix ../backend",
+    "build:frontend": "npm run build --prefix ../frontend",
+    "prepare:backend-package": "node ./scripts/prepare-backend-package.mjs",
+    "build:app": "npm run build:frontend && npm run build:backend && npm run build && npm run prepare:backend-package",
+    "dev": "electron .",
+    "dist": "npm run build:app && electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.12",
+    "typescript": "^5.7.3"
+  },
+  "build": {
+    "appId": "com.mailsystem.desktop",
+    "productName": "Mail Catcher",
+    "artifactName": "Mail-Catcher-Setup-${version}.${ext}",
+    "copyright": "Copyright (c) 2026 Mail Testing System Team",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../frontend/dist",
+        "to": "frontend"
+      },
+      {
+        "from": ".packaging/backend/dist",
+        "to": "backend/dist"
+      },
+      {
+        "from": ".packaging/backend/prisma",
+        "to": "backend/prisma"
+      },
+      {
+        "from": ".packaging/backend/package.json",
+        "to": "backend/package.json"
+      },
+      {
+        "from": ".packaging/backend/node_modules",
+        "to": "backend/node_modules"
+      },
+      {
+        "from": "build/icon.png",
+        "to": "assets/icon.png"
+      }
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
+    }
+  }
+}

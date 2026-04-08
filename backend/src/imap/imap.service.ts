@@ -12,7 +12,7 @@ import { EmailsService } from '../emails/emails.service';
 import { EventsGateway } from '../events/events.gateway';
 import { AttachmentsService } from '../attachments/attachments.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { decrypt } from '../utils/crypto.util';
+import { CredentialBridgeService } from '../credentials/credential-bridge.service';
 
 @Injectable()
 export class ImapService implements OnModuleInit, OnModuleDestroy {
@@ -55,6 +55,7 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     private readonly attachmentsService: AttachmentsService,
     private readonly eventsGateway: EventsGateway,
     private readonly prisma: PrismaService,
+    private readonly credentialBridge: CredentialBridgeService,
   ) {}
 
   async onModuleInit() {
@@ -84,13 +85,18 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     try {
       const activeProfile = await this.prisma.imapProfile.findFirst({ where: { isActive: true } });
       if (activeProfile) {
+        const password = await this.credentialBridge.getPassword(activeProfile.credentialKey);
+        if (!password) {
+          throw new Error(`No IMAP credential available for active profile ${activeProfile.id}`);
+        }
+
         this.imapOptions = {
           host: activeProfile.imapHost,
           port: activeProfile.imapPort,
           secure: activeProfile.imapTls,
           auth: {
             user: activeProfile.imapUser,
-            pass: decrypt(activeProfile.imapPassword),
+            pass: password,
           },
           logger: false,
         };
@@ -393,4 +399,3 @@ export class ImapService implements OnModuleInit, OnModuleDestroy {
     });
   }
 }
-

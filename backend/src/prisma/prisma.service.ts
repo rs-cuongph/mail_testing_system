@@ -1,20 +1,29 @@
 import {
   Injectable,
+  Logger,
   OnModuleDestroy,
   OnModuleInit,
-  Logger,
 } from '@nestjs/common';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import * as fs from 'fs';
+import * as path from 'path';
 
-function createPrismaClient(): PrismaClient {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error('DATABASE_URL environment variable is not set');
+function resolveDatabaseUrl() {
+  return process.env.DATABASE_URL?.trim() || 'file:./data/mail-testing-system.db';
+}
+
+function ensureSqliteDirectory(databaseUrl: string) {
+  if (!databaseUrl.startsWith('file:')) {
+    return;
   }
-  const adapter = new PrismaPg({ connectionString });
 
-  return new PrismaClient({ adapter } as any);
+  const sqlitePath = databaseUrl.slice('file:'.length);
+  const resolvedPath = path.isAbsolute(sqlitePath)
+    ? sqlitePath
+    : path.resolve(process.cwd(), sqlitePath);
+
+  fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
 }
 
 @Injectable()
@@ -25,17 +34,16 @@ export class PrismaService
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString)
-      throw new Error('DATABASE_URL environment variable is not set');
-    const adapter = new PrismaPg({ connectionString });
-    // Prisma 7 "client" engine requires adapter to be passed; no url in schema.prisma
-    super({ adapter } as any);
+    const databaseUrl = resolveDatabaseUrl();
+    ensureSqliteDirectory(databaseUrl);
+    process.env.DATABASE_URL = databaseUrl;
+    const adapter = new PrismaLibSql({ url: databaseUrl });
+    super({ adapter } as ConstructorParameters<typeof PrismaClient>[0]);
   }
 
   async onModuleInit() {
     await this.$connect();
-    this.logger.log('✅ Database connected');
+    this.logger.log(`Database connected (${process.env.DATABASE_URL})`);
   }
 
   async onModuleDestroy() {

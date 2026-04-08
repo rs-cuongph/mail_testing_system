@@ -1,12 +1,30 @@
 import type { EmailDetail, ThreadDetail, ThreadsResponse, Category, SearchResult } from '../types';
-
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:7654/api';
+import { getApiBaseUrl } from './runtime';
+import { traceError } from './trace';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, options);
+  let res: Response;
+
+  try {
+    res = await fetch(`${getApiBaseUrl()}${path}`, options);
+  } catch (error) {
+    traceError('http', 'HTTP request failed before response', error, {
+      path,
+      method: options?.method ?? 'GET',
+    });
+    throw error;
+  }
+
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message ?? 'Request failed');
+    const requestError = new Error(error.message ?? 'Request failed');
+    traceError('http', 'HTTP request returned error response', requestError, {
+      path,
+      method: options?.method ?? 'GET',
+      status: res.status,
+      statusText: res.statusText,
+    });
+    throw requestError;
   }
   return res.json();
 }
@@ -23,7 +41,7 @@ export const api = {
   getEmailById: (id: string) => request<EmailDetail>(`/emails/${id}`),
   deleteThread: (tag: string) => request(`/threads/${encodeURIComponent(tag)}`, { method: 'DELETE' }),
   deleteAll: () => request('/threads', { method: 'DELETE' }),
-  getAttachmentDownloadUrl: (id: string) => `${BASE_URL}/attachments/${id}/download`,
+  getAttachmentDownloadUrl: (id: string) => `${getApiBaseUrl()}/attachments/${id}/download`,
   
   // Read status
   markAsRead: (id: string) => request(`/emails/${id}/read`, { method: 'PATCH' }),
