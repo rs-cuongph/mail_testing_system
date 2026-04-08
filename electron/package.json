@@ -9,8 +9,9 @@
     "build": "tsc -p tsconfig.json",
     "build:backend": "npm run build:desktop --prefix ../backend",
     "build:frontend": "npm run build --prefix ../frontend",
+    "prepare:app-package": "node ./scripts/prepare-app-package.mjs",
     "prepare:backend-package": "node ./scripts/prepare-backend-package.mjs",
-    "build:app": "npm run build:frontend && npm run build:backend && npm run build && npm run prepare:backend-package",
+    "build:app": "npm run build:frontend && npm run build:backend && npm run build && npm run prepare:app-package && npm run prepare:backend-package",
     "dev": "electron .",
     "dist": "npm run build:app && electron-builder --win nsis"
   },
@@ -56,6 +57,7 @@
       }
     ],
     "directories": {
+      "app": ".packaging/app",
       "buildResources": "build"
     },
     "win": {

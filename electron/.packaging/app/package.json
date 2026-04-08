@@ -1,0 +1,7 @@
+{
+  "name": "mail-testing-system-electron",
+  "version": "0.1.0",
+  "description": "Mail Catcher desktop app for email testing and real-time inbox inspection",
+  "author": "Mail Testing System Team",
+  "main": "dist/main.js"
+}
